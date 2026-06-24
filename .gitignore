@@ -1,6 +1,7 @@
 # Generated exports
 output/
 exports/
+dist/
 *.recovery.json
 .tmp-*
 

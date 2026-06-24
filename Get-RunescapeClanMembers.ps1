@@ -55,11 +55,13 @@ param(
     [switch]$ShowAllInConsole,
     [switch]$OpenFolder,
     [switch]$AllowInsecureFallback,
-    [switch]$KeepRecoveryFile
+    [switch]$KeepRecoveryFile,
+    [switch]$Version
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+$script:ApplicationVersion = "0.1.0"
 $script:LastHttpRequestAt = $null
 $script:ConfiguredRetryBaseDelaySec = $RetryBaseDelaySec
 $script:ConfiguredMaxRetryDelaySec = $MaxRetryDelaySec
@@ -1402,6 +1404,12 @@ function Read-PostSequenceAction {
 }
 
 Initialize-Console
+
+if ($Version) {
+    Write-Console "RuneScape Clan Roster Exporter v$script:ApplicationVersion"
+    exit 0
+}
+
 $currentGame = $Game
 $currentClanName = $ClanName
 $currentOutputFormat = $OutputFormat
@@ -1411,7 +1419,7 @@ $exitCode = 0
 while ($true) {
     try {
         Write-Console ""
-        Write-Console "Export de membres RuneScape / OSRS" -ForegroundColor White
+        Write-Console "Export de membres RuneScape / OSRS v$script:ApplicationVersion" -ForegroundColor White
         Write-Console ""
 
         $options = Resolve-InteractiveOption -Game $currentGame -ClanName $currentClanName -OutputFormat $currentOutputFormat -OsrsGroupId $currentOsrsGroupId
