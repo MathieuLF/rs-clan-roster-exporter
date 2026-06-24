@@ -1,0 +1,26 @@
+# Generated exports
+output/
+exports/
+*.recovery.json
+.tmp-*
+
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+*.log
+.vscode/
+.idea/
+
+# Local AI assistant/tooling files
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.codex/
+.claude/
+.cursor/
+.windsurf/
+.aider*
+.cursorrules
+skills/
+.skills/
