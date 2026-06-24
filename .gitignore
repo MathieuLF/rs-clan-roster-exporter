@@ -18,6 +18,7 @@ CLAUDE.md
 GEMINI.md
 .codex/
 .claude/
+.playwright-cli/
 .cursor/
 .windsurf/
 .aider*

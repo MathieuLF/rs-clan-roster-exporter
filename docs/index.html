@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RuneScape Clan Roster Exporter</title>
+  <meta name="description" content="Script PowerShell local pour exporter les membres d'un clan RuneScape 3 ou d'un groupe OSRS en Markdown ou CSV.">
+  <meta property="og:title" content="RuneScape Clan Roster Exporter">
+  <meta property="og:description" content="Exporter localement les membres d'un clan RS3 ou d'un groupe OSRS en Markdown ou CSV.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/hero-roster-preview.png">
+  <link rel="icon" href="assets/product-icon.png" type="image/png">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Accueil RuneScape Clan Roster Exporter">
+      <img src="assets/product-icon.png" alt="" width="32" height="32" aria-hidden="true">
+      <span>RuneScape Clan Roster Exporter</span>
+    </a>
+    <nav aria-label="Navigation principale">
+      <a href="#usage">Usage</a>
+      <a href="#formats">Formats</a>
+      <a href="#securite">Sécurité</a>
+      <a href="#support">Support</a>
+      <a class="nav-button" href="https://github.com/MathieuLF/rs-clan-roster-exporter">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="Aperçu du script RuneScape Clan Roster Exporter">
+      <div class="hero-content">
+        <p class="tag">Script PowerShell local</p>
+        <h1>RuneScape Clan Roster Exporter</h1>
+        <p class="lede">Récupère les membres d'un clan RuneScape 3 ou d'un groupe OSRS, puis génère un fichier Markdown ou CSV prêt à partager ou archiver.</p>
+        <div class="actions">
+          <a class="button primary" data-primary-download href="https://raw.githubusercontent.com/MathieuLF/rs-clan-roster-exporter/main/Get-RunescapeClanMembers.ps1">Télécharger le script</a>
+          <a class="button secondary" href="https://github.com/MathieuLF/rs-clan-roster-exporter#démarrage-rapide">Démarrage rapide</a>
+          <a class="button sponsor" href="https://github.com/sponsors/MathieuLF">Sponsor GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="release-strip" aria-labelledby="release-title" data-release-card>
+      <div>
+        <p class="tag">Version officielle</p>
+        <h2 id="release-title">Vérification en cours</h2>
+        <p data-release-summary>Le statut se met à jour depuis GitHub Releases.</p>
+      </div>
+      <dl data-release-details hidden>
+        <div>
+          <dt>Fichier</dt>
+          <dd data-release-package>À venir</dd>
+        </div>
+        <div>
+          <dt>Empreinte SHA256</dt>
+          <dd><code data-release-sha>À venir</code></dd>
+        </div>
+      </dl>
+      <p class="release-note" data-release-note hidden></p>
+    </section>
+
+    <section class="section" id="usage">
+      <div class="section-title">
+        <p class="tag">En pratique</p>
+        <h2>Trois choix, un export.</h2>
+        <p>Le script peut être lancé en mode interactif ou directement avec paramètres pour une utilisation répétable.</p>
+      </div>
+      <div class="card-grid three">
+        <article>
+          <strong>1. Choisir la source</strong>
+          <p>RS3, OSRS ou les deux. Les clans RS3 passent par l'endpoint public Jagex; les groupes OSRS passent par Wise Old Man.</p>
+        </article>
+        <article>
+          <strong>2. Entrer le nom</strong>
+          <p>Indiquer le clan ou le groupe à rechercher. Pour OSRS, un identifiant Wise Old Man peut aussi être fourni.</p>
+        </article>
+        <article>
+          <strong>3. Générer le fichier</strong>
+          <p>Choisir Markdown ou CSV. Les fichiers sont écrits localement dans le dossier <code>output</code>.</p>
+        </article>
+      </div>
+    </section>
+
+    <figure class="product-shot">
+      <img src="assets/screenshots/terminal-export-preview.png" alt="Aperçu synthétique d'une exportation dans un terminal PowerShell">
+      <figcaption>Aperçu synthétique. Aucun roster réel n'est utilisé dans cette image.</figcaption>
+    </figure>
+
+    <section class="section" id="formats">
+      <div class="section-title">
+        <p class="tag">Sorties</p>
+        <h2>Markdown ou CSV, en UTF-8 avec BOM.</h2>
+        <p>Les exports sont pensés pour être ouverts facilement dans Excel, PowerShell ou GitHub.</p>
+      </div>
+      <div class="split">
+        <div>
+          <h3>Colonnes principales</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Colonne</th>
+                <th>Contenu</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Game</code></td>
+                <td>RS3 ou OSRS</td>
+              </tr>
+              <tr>
+                <td><code>Clan</code></td>
+                <td>Nom du clan ou du groupe</td>
+              </tr>
+              <tr>
+                <td><code>Pseudo</code></td>
+                <td>Nom du membre</td>
+              </tr>
+              <tr>
+                <td><code>Rang</code></td>
+                <td>Rang retourné par la source</td>
+              </tr>
+              <tr>
+                <td><code>XP</code></td>
+                <td>XP retournée par la source</td>
+              </tr>
+              <tr>
+                <td><code>Kills</code></td>
+                <td>Valeur RS3 lorsque disponible</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code-panel" aria-label="Exemple de commande PowerShell">
+          <pre><code>.\Get-RunescapeClanMembers.ps1 `
+  -Game Both `
+  -ClanName "Example Clan" `
+  -OutputFormat Csv</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="securite">
+      <div class="section-title">
+        <p class="tag">Sécurité et respect</p>
+        <h2>Sources publiques, traitement local.</h2>
+        <p>L'outil ne demande aucun compte RuneScape et ne téléverse pas les exports générés.</p>
+      </div>
+      <div class="card-grid two">
+        <article>
+          <strong>Aucun secret requis</strong>
+          <p>Le script utilise seulement des endpoints publics. Il n'a pas besoin de mot de passe, de jeton ou de clé API.</p>
+        </article>
+        <article>
+          <strong>Exports ignorés par Git</strong>
+          <p>Les dossiers <code>output</code> et <code>exports</code>, les fichiers de récupération et les temporaires sont exclus du suivi Git.</p>
+        </article>
+        <article>
+          <strong>Réseau courtois</strong>
+          <p>Les appels sont séquentiels, avec délai minimal, retries et respect de <code>Retry-After</code> lorsque le service distant le fournit.</p>
+        </article>
+        <article>
+          <strong>Projet indépendant</strong>
+          <p>Le projet n'est pas affilié à Jagex, RuneScape ou Wise Old Man.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="support">
+      <div class="section-title">
+        <p class="tag">Support</p>
+        <h2>Signaler un problème ou proposer une amélioration.</h2>
+        <p>Indiquez le jeu ciblé, le format demandé, la version PowerShell et le message affiché.</p>
+      </div>
+      <div class="card-grid three">
+        <article>
+          <strong>Billet GitHub</strong>
+          <p>Pour suivre une anomalie ou une idée d'évolution publiquement.</p>
+          <a class="button primary" href="https://github.com/MathieuLF/rs-clan-roster-exporter/issues/new">Ouvrir un billet</a>
+        </article>
+        <article>
+          <strong>Code source</strong>
+          <p>Le script, la documentation et la licence sont disponibles dans le dépôt public.</p>
+          <a class="button secondary" href="https://github.com/MathieuLF/rs-clan-roster-exporter">Voir le dépôt</a>
+        </article>
+        <article>
+          <strong>Soutenir</strong>
+          <p>Le développement peut être soutenu par GitHub Sponsors.</p>
+          <a class="button sponsor" href="https://github.com/sponsors/MathieuLF">Sponsor GitHub</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Mathieu Lapointe-Fiset. RuneScape, Old School RuneScape, Jagex et les autres marques citées appartiennent à leurs propriétaires respectifs.</p>
+    <p>Ce projet est indépendant et n'est pas affilié, approuvé ou commandité par ces propriétaires.</p>
+    <p><a href="https://github.com/MathieuLF/rs-clan-roster-exporter">Dépôt GitHub</a> · <a href="guide_utilisateur.md">Guide utilisateur</a> · <a href="mentions_legales.md">Mentions légales</a></p>
+  </footer>
+</body>
+</html>
