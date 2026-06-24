@@ -3,6 +3,7 @@
 ![PowerShell 5.1+](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
 ![Output Markdown or CSV](https://img.shields.io/badge/Output-Markdown%20%7C%20CSV-2ea44f)
 ![License MIT](https://img.shields.io/badge/License-MIT-blue)
+[![Release](https://img.shields.io/github/v/release/MathieuLF/rs-clan-roster-exporter?label=Release)](https://github.com/MathieuLF/rs-clan-roster-exporter/releases)
 [![Site GitHub Pages](https://img.shields.io/badge/Site-GitHub%20Pages-167a63)](https://mathieulf.github.io/rs-clan-roster-exporter/)
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa)](https://github.com/sponsors/MathieuLF)
 
@@ -11,6 +12,8 @@ Exportateur PowerShell local pour récupérer les membres d'un clan RuneScape 3 
 Tout se lance depuis `Get-RunescapeClanMembers.ps1`, en mode interactif ou avec paramètres.
 
 Site de présentation : [mathieulf.github.io/rs-clan-roster-exporter](https://mathieulf.github.io/rs-clan-roster-exporter/).
+
+Versions officielles : [GitHub Releases](https://github.com/MathieuLF/rs-clan-roster-exporter/releases).
 
 ## Points clés
 
@@ -35,6 +38,12 @@ Depuis le dossier du script :
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1
+```
+
+Afficher la version du script :
+
+```powershell
+.\Get-RunescapeClanMembers.ps1 -Version
 ```
 
 Le mode interactif pose trois questions :
@@ -181,6 +190,24 @@ Cette commande lance le script pour cette exécution seulement.
 - En mode RS3 + OSRS, chaque source est traitée séparément : un échec OSRS ne bloque pas l'export RS3, et inversement.
 - Les paramètres textuels restent disponibles pour l'automatisation, même si le mode interactif privilégie les chiffres.
 - Le lien `file:///...` est une aide pratique; son côté cliquable dépend du terminal utilisé.
+
+## Mise en ligne officielle
+
+Le dépôt utilise une version SemVer dans `VERSION`, un `CHANGELOG.md` et des assets de release générés localement.
+
+Préparer les fichiers de release :
+
+```powershell
+.\scripts\Build-Release.ps1 -Version 0.1.0 -Clean
+```
+
+Publier une mise en ligne officielle depuis `main` :
+
+```powershell
+.\scripts\Publish-Release.ps1 -Version 0.1.0
+```
+
+La publication crée un tag `vX.Y.Z`, pousse le tag, joint le script versionné, le ZIP portable, les empreintes SHA256, le manifeste JSON et les notes de mise en ligne. Le microsite lit ensuite GitHub Releases pour mettre à jour son encart de téléchargement.
 
 ## Licence
 
