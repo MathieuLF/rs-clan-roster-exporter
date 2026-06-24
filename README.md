@@ -3,11 +3,14 @@
 ![PowerShell 5.1+](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
 ![Output Markdown or CSV](https://img.shields.io/badge/Output-Markdown%20%7C%20CSV-2ea44f)
 ![License MIT](https://img.shields.io/badge/License-MIT-blue)
+[![Site GitHub Pages](https://img.shields.io/badge/Site-GitHub%20Pages-167a63)](https://mathieulf.github.io/rs-clan-roster-exporter/)
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa)](https://github.com/sponsors/MathieuLF)
 
 Exportateur PowerShell local pour récupérer les membres d'un clan RuneScape 3 ou d'un groupe OSRS, puis générer un fichier Markdown ou CSV.
 
 Tout se lance depuis `Get-RunescapeClanMembers.ps1`, en mode interactif ou avec paramètres.
+
+Site de présentation : [mathieulf.github.io/rs-clan-roster-exporter](https://mathieulf.github.io/rs-clan-roster-exporter/).
 
 ## Points clés
 
