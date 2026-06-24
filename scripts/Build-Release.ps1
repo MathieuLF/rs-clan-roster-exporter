@@ -51,7 +51,7 @@ function Get-ChangelogSection {
         throw "CHANGELOG.md introuvable."
     }
 
-    $text = Get-Content -LiteralPath $changelogPath -Raw
+    $text = Get-Content -LiteralPath $changelogPath -Encoding UTF8 -Raw
     $pattern = "(?ms)^## \[$([regex]::Escape($ReleaseVersion))\].*?\r?\n(?<body>.*?)(?=^## |\z)"
     $match = [regex]::Match($text, $pattern)
     if (-not $match.Success) {
@@ -103,13 +103,13 @@ $ReleaseVersion = Get-ReleaseVersion -RequestedVersion $Version
 Assert-SemVer -Value $ReleaseVersion
 
 $versionFile = Join-Path -Path $Root -ChildPath "VERSION"
-$versionFileValue = (Get-Content -LiteralPath $versionFile -Raw).Trim()
+$versionFileValue = (Get-Content -LiteralPath $versionFile -Encoding UTF8 -Raw).Trim()
 if ($versionFileValue -ne $ReleaseVersion) {
     throw "VERSION contient '$versionFileValue', mais la release demandee est '$ReleaseVersion'."
 }
 
 $scriptPath = Join-Path -Path $Root -ChildPath $ScriptName
-$scriptText = Get-Content -LiteralPath $scriptPath -Raw
+$scriptText = Get-Content -LiteralPath $scriptPath -Encoding UTF8 -Raw
 if ($scriptText -notmatch "\`$script:ApplicationVersion = `"$([regex]::Escape($ReleaseVersion))`"") {
     throw "$ScriptName ne contient pas la version applicative $ReleaseVersion."
 }
@@ -193,10 +193,10 @@ $changelogNotes
 - ``$(Split-Path -Path $zipPath -Leaf)`` : ``$($zipHash.Sha256)``
 - ``$(Split-Path -Path $manifestPath -Leaf)`` : ``$($manifestHash.Sha256)``
 
-## Vérification publique
+## Verification publique
 
-- Données RuneScape ou OSRS transmises pendant cette mise en ligne : ``non``.
-- Les exports générés restent exclus du dépôt et des assets de release.
+- Donnees RuneScape ou OSRS transmises pendant cette mise en ligne : ``non``.
+- Les exports generes restent exclus du depot et des assets de release.
 "@
 
 $notesPath = Join-Path -Path $distDir -ChildPath "$ProductName-v$ReleaseVersion.release-notes.md"
