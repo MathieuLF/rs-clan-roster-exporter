@@ -18,7 +18,7 @@ function Get-ReleaseVersion {
 
     $versionPath = Join-Path -Path $Root -ChildPath "VERSION"
     if (-not (Test-Path -LiteralPath $versionPath -PathType Leaf)) {
-        throw "Fichier VERSION introuvable."
+        throw "VERSION file not found."
     }
 
     return (Get-Content -LiteralPath $versionPath -Raw).Trim()
@@ -28,7 +28,7 @@ function Assert-SemVer {
     param([string]$Value)
 
     if ($Value -notmatch "^\d+\.\d+\.\d+$") {
-        throw "Version invalide '$Value'. Format attendu : X.Y.Z."
+        throw "Invalid version '$Value'. Expected format: X.Y.Z."
     }
 }
 
@@ -48,14 +48,14 @@ function Get-ChangelogSection {
 
     $changelogPath = Join-Path -Path $Root -ChildPath "CHANGELOG.md"
     if (-not (Test-Path -LiteralPath $changelogPath -PathType Leaf)) {
-        throw "CHANGELOG.md introuvable."
+        throw "CHANGELOG.md not found."
     }
 
     $text = Get-Content -LiteralPath $changelogPath -Encoding UTF8 -Raw
     $pattern = "(?ms)^## \[$([regex]::Escape($ReleaseVersion))\].*?\r?\n(?<body>.*?)(?=^## |\z)"
     $match = [regex]::Match($text, $pattern)
     if (-not $match.Success) {
-        throw "Aucune section CHANGELOG.md trouvee pour $ReleaseVersion."
+        throw "No CHANGELOG.md section found for $ReleaseVersion."
     }
 
     return $match.Groups["body"].Value.Trim()
@@ -84,7 +84,7 @@ function New-Sha256File {
     param([string]$Path)
 
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
-        throw "Fichier introuvable pour empreinte SHA256 : $Path"
+        throw "File not found for SHA256 checksum: $Path"
     }
 
     $hash = (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -105,13 +105,13 @@ Assert-SemVer -Value $ReleaseVersion
 $versionFile = Join-Path -Path $Root -ChildPath "VERSION"
 $versionFileValue = (Get-Content -LiteralPath $versionFile -Encoding UTF8 -Raw).Trim()
 if ($versionFileValue -ne $ReleaseVersion) {
-    throw "VERSION contient '$versionFileValue', mais la release demandee est '$ReleaseVersion'."
+    throw "VERSION contains '$versionFileValue', but the requested release is '$ReleaseVersion'."
 }
 
 $scriptPath = Join-Path -Path $Root -ChildPath $ScriptName
 $scriptText = Get-Content -LiteralPath $scriptPath -Encoding UTF8 -Raw
 if ($scriptText -notmatch "\`$script:ApplicationVersion = `"$([regex]::Escape($ReleaseVersion))`"") {
-    throw "$ScriptName ne contient pas la version applicative $ReleaseVersion."
+    throw "$ScriptName does not contain application version $ReleaseVersion."
 }
 
 $distDir = Join-Path -Path $Root -ChildPath "dist"
@@ -181,29 +181,29 @@ $changelogNotes = Get-ChangelogSection -ReleaseVersion $ReleaseVersion
 $releaseNotes = @"
 $changelogNotes
 
-## Assets officiels
+## Official assets
 
-- Script PowerShell : ``$(Split-Path -Path $versionedScript -Leaf)``
-- ZIP portable : ``$(Split-Path -Path $zipPath -Leaf)``
-- Manifeste : ``$(Split-Path -Path $manifestPath -Leaf)``
+- PowerShell script: ``$(Split-Path -Path $versionedScript -Leaf)``
+- Portable ZIP: ``$(Split-Path -Path $zipPath -Leaf)``
+- Manifest: ``$(Split-Path -Path $manifestPath -Leaf)``
 
-## Empreintes SHA256
+## SHA256 checksums
 
-- ``$(Split-Path -Path $versionedScript -Leaf)`` : ``$($scriptHash.Sha256)``
-- ``$(Split-Path -Path $zipPath -Leaf)`` : ``$($zipHash.Sha256)``
-- ``$(Split-Path -Path $manifestPath -Leaf)`` : ``$($manifestHash.Sha256)``
+- ``$(Split-Path -Path $versionedScript -Leaf)``: ``$($scriptHash.Sha256)``
+- ``$(Split-Path -Path $zipPath -Leaf)``: ``$($zipHash.Sha256)``
+- ``$(Split-Path -Path $manifestPath -Leaf)``: ``$($manifestHash.Sha256)``
 
-## Verification publique
+## Public verification
 
-- Donnees RuneScape ou OSRS transmises pendant cette mise en ligne : ``non``.
-- Les exports generes restent exclus du depot et des assets de release.
+- RuneScape or OSRS data transmitted during this release: ``no``.
+- Generated exports remain excluded from the repository and release assets.
 "@
 
 $notesPath = Join-Path -Path $distDir -ChildPath "$ProductName-v$ReleaseVersion.release-notes.md"
 Write-Utf8File -Path $notesPath -Content ($releaseNotes.Trim() + "`n")
 
-Write-Host "Release preparee : v$ReleaseVersion"
-Write-Host "Script : $versionedScript"
-Write-Host "ZIP : $zipPath"
-Write-Host "Manifest : $manifestPath"
-Write-Host "Notes : $notesPath"
+Write-Host "Release prepared: v$ReleaseVersion"
+Write-Host "Script: $versionedScript"
+Write-Host "ZIP: $zipPath"
+Write-Host "Manifest: $manifestPath"
+Write-Host "Notes: $notesPath"

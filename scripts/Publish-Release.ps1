@@ -42,15 +42,15 @@ function Get-ReleaseVersion {
 
 function Assert-CleanMain {
     $branch = (& git branch --show-current).Trim()
-    Assert-LastExitCode "Lecture de la branche courante impossible"
+    Assert-LastExitCode "Could not read the current branch"
     if ($branch -ne "main") {
-        throw "Une release officielle doit etre creee depuis main, pas depuis '$branch'."
+        throw "An official release must be created from main, not from '$branch'."
     }
 
     $status = & git status --porcelain
-    Assert-LastExitCode "Lecture du statut Git impossible"
+    Assert-LastExitCode "Could not read Git status"
     if ($status) {
-        throw "Le depot doit etre propre avant la publication."
+        throw "The repository must be clean before publishing."
     }
 }
 
@@ -59,25 +59,25 @@ function Assert-NoExistingRelease {
 
     $releaseExitCode = Invoke-QuietNative -Command { gh release view $Tag }
     if ($releaseExitCode -eq 0) {
-        throw "La release GitHub $Tag existe deja."
+        throw "GitHub release $Tag already exists."
     }
 
     $localTagExitCode = Invoke-QuietNative -Command { git rev-parse -q --verify "refs/tags/$Tag" }
     if ($localTagExitCode -eq 0) {
-        throw "Le tag local $Tag existe deja."
+        throw "Local tag $Tag already exists."
     }
 
     $remoteTag = & git ls-remote --tags origin "refs/tags/$Tag"
-    Assert-LastExitCode "Verification du tag distant impossible"
+    Assert-LastExitCode "Could not verify the remote tag"
     if (-not [string]::IsNullOrWhiteSpace($remoteTag)) {
-        throw "Le tag distant $Tag existe deja."
+        throw "Remote tag $Tag already exists."
     }
 }
 
 Set-Location -LiteralPath $Root
 $ReleaseVersion = Get-ReleaseVersion -RequestedVersion $Version
 if ($ReleaseVersion -notmatch "^\d+\.\d+\.\d+$") {
-    throw "Version invalide '$ReleaseVersion'. Format attendu : X.Y.Z."
+    throw "Invalid version '$ReleaseVersion'. Expected format: X.Y.Z."
 }
 
 $tag = "v$ReleaseVersion"
@@ -87,16 +87,16 @@ Assert-NoExistingRelease -Tag $tag
 & (Join-Path -Path $PSScriptRoot -ChildPath "Test-Local.ps1")
 
 & (Join-Path -Path $PSScriptRoot -ChildPath "Build-Release.ps1") -Version $ReleaseVersion -Clean
-Assert-LastExitCode "Preparation des assets impossible"
+Assert-LastExitCode "Could not prepare release assets"
 
 git tag -a $tag -m "RuneScape Clan Roster Exporter v$ReleaseVersion"
-Assert-LastExitCode "Creation du tag impossible"
+Assert-LastExitCode "Could not create tag"
 
 git push origin main
-Assert-LastExitCode "Push de main impossible"
+Assert-LastExitCode "Could not push main"
 
 git push origin $tag
-Assert-LastExitCode "Push du tag impossible"
+Assert-LastExitCode "Could not push tag"
 
 $distDir = Join-Path -Path $Root -ChildPath "dist"
 $assets = @(
@@ -120,6 +120,6 @@ if ($Draft) {
 
 $releaseArgs += $assets
 gh @releaseArgs
-Assert-LastExitCode "Creation de la release GitHub impossible"
+Assert-LastExitCode "Could not create GitHub release"
 
-Write-Host "Release GitHub creee : $tag"
+Write-Host "GitHub release created: $tag"

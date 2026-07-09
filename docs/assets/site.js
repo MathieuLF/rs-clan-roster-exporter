@@ -94,18 +94,18 @@
       });
     } catch (_error) {
       setFallback(
-        "Version non vérifiée",
-        "Impossible de joindre GitHub Releases pour le moment.",
-        "Le script reste disponible directement depuis le dépôt."
+        "Release not verified",
+        "GitHub Releases cannot be reached right now.",
+        "The script remains available directly from the repository."
       );
       return;
     }
 
     if (!response.ok) {
       setFallback(
-        "Version non vérifiée",
-        "GitHub Releases n'a pas répondu correctement.",
-        "Consultez le dépôt GitHub si vous voulez vérifier manuellement les fichiers disponibles."
+        "Release not verified",
+        "GitHub Releases did not respond successfully.",
+        "Open the GitHub repository if you want to verify the available files manually."
       );
       return;
     }
@@ -117,9 +117,9 @@
 
     if (!release) {
       setFallback(
-        "Aucune version publiée",
-        "La première mise en ligne officielle n'est pas encore publiée.",
-        "Le bouton principal télécharge le script depuis la branche main."
+        "No release published",
+        "The first official release has not been published yet.",
+        "The primary button downloads the script from the main branch."
       );
       return;
     }
@@ -129,11 +129,11 @@
     const shaAsset = downloadAsset ? findSha(assets, downloadAsset.name) : null;
     const releaseDate = release.published_at ? new Date(release.published_at) : null;
     const releaseDateText = releaseDate
-      ? releaseDate.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" })
-      : "date non publiée";
+      ? releaseDate.toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })
+      : "unpublished date";
 
-    setText(title, release.name || release.tag_name || "Version publiée");
-    setText(summary, `Mise en ligne officielle publiée le ${releaseDateText}.`);
+    setText(title, release.name || release.tag_name || "Published release");
+    setText(summary, `Official release published on ${releaseDateText}.`);
 
     if (details) {
       details.hidden = false;
@@ -145,14 +145,14 @@
         primaryDownloadLink.href = downloadAsset.browser_download_url;
       }
     } else {
-      setText(packageTarget, "Aucun fichier téléchargeable joint à cette version.");
+      setText(packageTarget, "No downloadable file is attached to this release.");
       if (primaryDownloadLink) {
         primaryDownloadLink.href = release.html_url || releasesUrl;
       }
     }
 
     const shaValue = shaFromAssetDigest(downloadAsset) || await shaFromFile(shaAsset);
-    setText(shaTarget, shaValue || "Non publiée avec cette mise en ligne.");
+    setText(shaTarget, shaValue || "Not published with this release.");
 
     if (note) {
       note.hidden = true;
