@@ -18,22 +18,22 @@ Interactive mode asks for the target game, the clan or group name, and the outpu
 
 ## Examples
 
-Export an RS3 clan to CSV:
+Export the RS3 clan Wapitiklan Empire to CSV:
 
 ```powershell
-.\Get-RunescapeClanMembers.ps1 -Game RS3 -ClanName "Example Clan" -OutputFormat Csv
+.\Get-RunescapeClanMembers.ps1 -Game RS3 -ClanName "Wapitiklan Empire" -OutputFormat Csv
 ```
 
-Export an OSRS group to Markdown:
+Export the same RS3 clan to Markdown:
 
 ```powershell
-.\Get-RunescapeClanMembers.ps1 -Game OSRS -ClanName "Example Group" -OutputFormat Markdown
+.\Get-RunescapeClanMembers.ps1 -Game RS3 -ClanName "Wapitiklan Empire" -OutputFormat Markdown
 ```
 
-Search the same name in RS3 and OSRS:
+Export an OSRS group to CSV:
 
 ```powershell
-.\Get-RunescapeClanMembers.ps1 -Game Both -ClanName "Example Clan" -OutputFormat Csv
+.\Get-RunescapeClanMembers.ps1 -Game OSRS -ClanName "KnightSlayer" -OutputFormat Csv
 ```
 
 ## Generated Files
