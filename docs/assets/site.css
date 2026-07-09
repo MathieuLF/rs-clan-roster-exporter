@@ -13,12 +13,40 @@
   --coral: #d65f3f;
   --sponsor: #bf3989;
   --sponsor-hover: #a62f77;
+  --scroll-track: rgba(234, 242, 239, 0.92);
+  --scroll-thumb: rgba(22, 122, 99, 0.52);
+  --scroll-thumb-hover: rgba(15, 92, 75, 0.78);
   --shadow: 0 18px 42px rgba(23, 32, 42, 0.12);
   --shadow-lift: 0 22px 46px rgba(23, 32, 42, 0.16);
 }
 
 * {
   box-sizing: border-box;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 3px solid var(--scroll-track);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(22, 122, 99, 0.72), rgba(180, 118, 34, 0.58));
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--scroll-thumb-hover), rgba(180, 118, 34, 0.78));
+}
+
+*::-webkit-scrollbar-corner {
+  background: var(--scroll-track);
 }
 
 html {
@@ -67,7 +95,11 @@ pre {
   gap: 20px;
   min-height: 72px;
   padding: 14px 48px;
-  background: rgba(255, 255, 255, 0.94);
+  background:
+    radial-gradient(circle at 9% -28px, rgba(22, 122, 99, 0.12) 0 56px, transparent 58px),
+    radial-gradient(circle at 92% 96px, rgba(180, 118, 34, 0.1) 0 64px, transparent 66px),
+    repeating-linear-gradient(90deg, rgba(23, 32, 42, 0.035) 0 1px, transparent 1px 84px),
+    rgba(255, 255, 255, 0.94);
   border-bottom: 1px solid var(--line);
   border-top: 4px solid var(--green);
   box-shadow: 0 10px 26px rgba(23, 32, 42, 0.07);
@@ -127,6 +159,7 @@ nav a:focus {
   isolation: isolate;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
   min-height: 520px;
   height: 72svh;
@@ -141,16 +174,18 @@ nav a:focus {
 .hero::after {
   content: "";
   position: absolute;
-  inset: auto 0 0;
-  z-index: -1;
-  height: 140px;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background:
-    linear-gradient(180deg, transparent, rgba(5, 12, 16, 0.56)),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.13) 0 2px, transparent 2px 24px);
+    linear-gradient(90deg, rgba(5, 12, 16, 0.22), transparent 36%, rgba(5, 12, 16, 0.14)),
+    linear-gradient(180deg, transparent 58%, rgba(5, 12, 16, 0.58));
 }
 
 .hero-content {
-  width: min(720px, 100%);
+  position: relative;
+  z-index: 1;
+  width: min(1080px, 100%);
 }
 
 .tag {
@@ -362,27 +397,29 @@ h3 {
 
 .release-strip {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.9fr);
-  gap: 28px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(240px, 0.85fr);
+  gap: 20px;
   align-items: center;
-  padding: 28px 48px;
+  padding: 18px max(48px, calc((100% - 1080px) / 2));
   background:
     linear-gradient(135deg, #ffffff, #f2fbf7 52%, #fff8e8);
   border-bottom: 1px solid var(--line);
 }
 
 .release-strip h2 {
-  font-size: 1.45rem;
+  margin-bottom: 6px;
+  font-size: 1.18rem;
 }
 
 .release-strip p {
   margin-bottom: 0;
   color: var(--muted);
+  font-size: 0.94rem;
 }
 
 .release-strip dl {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   margin: 0;
 }
 
@@ -393,7 +430,7 @@ h3 {
 
 .release-strip dt {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -401,6 +438,7 @@ h3 {
 .release-strip dd {
   margin: 0;
   overflow-wrap: anywhere;
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
@@ -558,14 +596,26 @@ td:first-child {
   overflow-x: auto;
   color: #dce9ea;
   font-size: 1rem;
+  scrollbar-color: rgba(140, 224, 191, 0.74) rgba(255, 255, 255, 0.08);
+}
+
+.code-panel pre::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.code-panel pre::-webkit-scrollbar-thumb {
+  border-color: #101922;
+  background: linear-gradient(90deg, rgba(140, 224, 191, 0.88), rgba(241, 199, 110, 0.78));
 }
 
 footer {
-  margin-top: 84px;
-  padding: 34px 48px 44px;
+  margin-top: 66px;
+  padding: 22px 48px 26px;
   background:
     linear-gradient(135deg, #111922, #102f33 58%, #2d2518);
   color: #d9e1e4;
+  font-size: 0.86rem;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -604,7 +654,7 @@ footer {
 
 footer p {
   max-width: 1080px;
-  margin: 0 auto 10px;
+  margin: 0 auto 7px;
 }
 
 footer p:last-child {
@@ -650,7 +700,8 @@ footer a {
   }
 
   .release-strip {
-    padding: 26px 22px;
+    gap: 12px;
+    padding: 18px 22px;
   }
 }
 
@@ -702,6 +753,6 @@ footer a {
   }
 
   footer {
-    padding: 30px 22px 38px;
+    padding: 20px 22px 24px;
   }
 }
