@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>RuneScape Clan Roster Exporter</title>
-  <meta name="description" content="Script PowerShell local pour exporter les membres d'un clan RuneScape 3 ou d'un groupe OSRS en Markdown ou CSV.">
+  <meta name="description" content="Script PowerShell local compatible Windows, Linux et macOS pour exporter les membres d'un clan RuneScape 3 ou d'un groupe OSRS en Markdown ou CSV.">
   <meta property="og:title" content="RuneScape Clan Roster Exporter">
-  <meta property="og:description" content="Exporter localement les membres d'un clan RS3 ou d'un groupe OSRS en Markdown ou CSV.">
+  <meta property="og:description" content="Exporter localement les membres d'un clan RS3 ou d'un groupe OSRS en Markdown ou CSV, avec validation locale et garde-fous réseau.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/hero-roster-preview.png">
   <link rel="icon" href="assets/product-icon.png" type="image/png">
@@ -23,6 +23,7 @@
       <a href="#usage">Usage</a>
       <a href="#formats">Formats</a>
       <a href="#securite">Sécurité</a>
+      <a href="#validation">Validation</a>
       <a href="#support">Support</a>
       <a class="nav-button" href="https://github.com/MathieuLF/rs-clan-roster-exporter">GitHub</a>
     </nav>
@@ -31,13 +32,13 @@
   <main id="top">
     <section class="hero" aria-label="Aperçu du script RuneScape Clan Roster Exporter">
       <div class="hero-content">
-        <p class="tag">Script PowerShell local</p>
+        <p class="tag"><span aria-hidden="true">⚔️</span> Script PowerShell local</p>
         <h1>RuneScape Clan Roster Exporter</h1>
-        <p class="lede">Récupère les membres d'un clan RuneScape 3 ou d'un groupe OSRS, puis génère un fichier Markdown ou CSV prêt à partager ou archiver.</p>
+        <p class="lede">Récupère les membres d'un clan RuneScape 3 ou d'un groupe OSRS, puis génère un fichier Markdown ou CSV prêt à partager ou archiver. Compatible Windows, Linux et macOS avec PowerShell.</p>
         <div class="actions">
-          <a class="button primary" data-primary-download href="https://raw.githubusercontent.com/MathieuLF/rs-clan-roster-exporter/main/Get-RunescapeClanMembers.ps1">Télécharger le script</a>
-          <a class="button secondary" href="https://github.com/MathieuLF/rs-clan-roster-exporter#démarrage-rapide">Démarrage rapide</a>
-          <a class="button sponsor" href="https://github.com/sponsors/MathieuLF">Sponsor GitHub</a>
+          <a class="button primary" data-primary-download href="https://raw.githubusercontent.com/MathieuLF/rs-clan-roster-exporter/main/Get-RunescapeClanMembers.ps1"><span aria-hidden="true">⬇️</span> Télécharger le script</a>
+          <a class="button secondary" href="https://github.com/MathieuLF/rs-clan-roster-exporter#démarrage-rapide"><span aria-hidden="true">⚡</span> Démarrage rapide</a>
+          <a class="button sponsor" href="https://github.com/sponsors/MathieuLF"><span aria-hidden="true">💖</span> Sponsor GitHub</a>
         </div>
         <div class="source-badges" aria-label="Technologies et services utilisés">
           <a class="source-badge rs" href="https://www.runescape.com/" aria-label="RuneScape 3">
@@ -62,7 +63,7 @@
             </span>
             <span>
               <strong>PowerShell</strong>
-              <small>Script local</small>
+              <small>Windows / Linux / macOS</small>
             </span>
           </a>
           <a class="source-badge wom" href="https://wiseoldman.net/" aria-label="Wise Old Man">
@@ -86,7 +87,7 @@
 
     <section class="release-strip" aria-labelledby="release-title" data-release-card>
       <div>
-        <p class="tag">Version officielle</p>
+        <p class="tag"><span aria-hidden="true">🚀</span> Version officielle</p>
         <h2 id="release-title">Vérification en cours</h2>
         <p data-release-summary>Le statut se met à jour depuis GitHub Releases.</p>
       </div>
@@ -105,21 +106,21 @@
 
     <section class="section" id="usage">
       <div class="section-title">
-        <p class="tag">En pratique</p>
+        <p class="tag"><span aria-hidden="true">🧭</span> En pratique</p>
         <h2>Trois choix, un export.</h2>
         <p>Le script peut être lancé en mode interactif ou directement avec paramètres pour une utilisation répétable.</p>
       </div>
       <div class="card-grid three">
         <article>
-          <strong>1. Choisir la source</strong>
+          <strong><span aria-hidden="true">🎮</span> 1. Choisir la source</strong>
           <p>RS3, OSRS ou les deux. Les clans RS3 passent par l'endpoint public Jagex; les groupes OSRS passent par Wise Old Man.</p>
         </article>
         <article>
-          <strong>2. Entrer le nom</strong>
+          <strong><span aria-hidden="true">🔎</span> 2. Entrer le nom</strong>
           <p>Indiquer le clan ou le groupe à rechercher. Pour OSRS, un identifiant Wise Old Man peut aussi être fourni.</p>
         </article>
         <article>
-          <strong>3. Générer le fichier</strong>
+          <strong><span aria-hidden="true">📦</span> 3. Générer le fichier</strong>
           <p>Choisir Markdown ou CSV. Les fichiers sont écrits localement dans le dossier <code>output</code>.</p>
         </article>
       </div>
@@ -132,7 +133,7 @@
 
     <section class="section" id="formats">
       <div class="section-title">
-        <p class="tag">Sorties</p>
+        <p class="tag"><span aria-hidden="true">🧾</span> Sorties</p>
         <h2>Markdown ou CSV, en UTF-8 avec BOM.</h2>
         <p>Les exports sont pensés pour être ouverts facilement dans Excel, PowerShell ou GitHub.</p>
       </div>
@@ -185,49 +186,84 @@
 
     <section class="section" id="securite">
       <div class="section-title">
-        <p class="tag">Sécurité et respect</p>
+        <p class="tag"><span aria-hidden="true">🛡️</span> Sécurité et respect</p>
         <h2>Sources publiques, traitement local.</h2>
         <p>L'outil ne demande aucun compte RuneScape et ne téléverse pas les exports générés.</p>
       </div>
       <div class="card-grid two">
         <article>
-          <strong>Aucun secret requis</strong>
+          <strong><span aria-hidden="true">🔐</span> Aucun secret requis</strong>
           <p>Le script utilise seulement des endpoints publics. Il n'a pas besoin de mot de passe, de jeton ou de clé API.</p>
         </article>
         <article>
-          <strong>Exports ignorés par Git</strong>
+          <strong><span aria-hidden="true">📁</span> Exports ignorés par Git</strong>
           <p>Les dossiers <code>output</code> et <code>exports</code>, les fichiers de récupération et les temporaires sont exclus du suivi Git.</p>
         </article>
         <article>
-          <strong>Réseau courtois</strong>
+          <strong><span aria-hidden="true">🌐</span> Réseau courtois</strong>
           <p>Les appels sont séquentiels, avec délai minimal, retries et respect de <code>Retry-After</code> lorsque le service distant le fournit.</p>
         </article>
         <article>
-          <strong>Projet indépendant</strong>
+          <strong><span aria-hidden="true">✨</span> Projet indépendant</strong>
           <p>Le projet n'est pas affilié à Jagex, RuneScape ou Wise Old Man.</p>
         </article>
       </div>
     </section>
 
+    <section class="section" id="validation">
+      <div class="section-title">
+        <p class="tag"><span aria-hidden="true">✅</span> Validation locale</p>
+        <h2>Des garde-fous avant de publier.</h2>
+        <p>Le dépôt inclut des vérifications locales sans appel réseau, plus un smoke test OSRS réel à lancer seulement quand vous le demandez.</p>
+      </div>
+      <div class="split">
+        <div class="card-grid two">
+          <article>
+            <strong><span aria-hidden="true">🧪</span> Tests internes</strong>
+            <p><code>-SelfTest</code> vérifie le parsing RS3/OSRS, les exports, les chemins spéciaux, le User-Agent et les erreurs HTTP permanentes.</p>
+          </article>
+          <article>
+            <strong><span aria-hidden="true">🌍</span> Smoke test réseau</strong>
+            <p><code>-NetworkSmoke</code> effectue un export OSRS réel dans un dossier temporaire pour confirmer que Wise Old Man répond comme prévu.</p>
+          </article>
+          <article>
+            <strong><span aria-hidden="true">🖥️</span> Hôtes PowerShell</strong>
+            <p><code>Test-Local.ps1</code> vérifie PowerShell 7 et Windows PowerShell 5.1 lorsque les deux sont disponibles localement.</p>
+          </article>
+          <article>
+            <strong><span aria-hidden="true">📂</span> Sorties robustes</strong>
+            <p><code>-OpenFolder</code> tente d'ouvrir le dossier local sans faire échouer l'export si l'environnement ne le permet pas.</p>
+          </article>
+        </div>
+        <div class="code-panel" aria-label="Commandes de validation locale">
+          <pre><code>pwsh -NoProfile -File ./Get-RunescapeClanMembers.ps1 -SelfTest
+
+pwsh -NoProfile -File ./scripts/Test-Local.ps1
+
+pwsh -NoProfile -File ./scripts/Test-Local.ps1 -NetworkSmoke</code></pre>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="support">
       <div class="section-title">
-        <p class="tag">Support</p>
+        <p class="tag"><span aria-hidden="true">💬</span> Support</p>
         <h2>Signaler un problème ou proposer une amélioration.</h2>
         <p>Indiquez le jeu ciblé, le format demandé, la version PowerShell et le message affiché.</p>
       </div>
       <div class="card-grid three">
         <article>
-          <strong>Billet GitHub</strong>
+          <strong><span aria-hidden="true">📝</span> Billet GitHub</strong>
           <p>Pour suivre une anomalie ou une idée d'évolution publiquement.</p>
           <a class="button primary" href="https://github.com/MathieuLF/rs-clan-roster-exporter/issues/new">Ouvrir un billet</a>
         </article>
         <article>
-          <strong>Code source</strong>
+          <strong><span aria-hidden="true">🧰</span> Code source</strong>
           <p>Le script, la documentation et la licence sont disponibles dans le dépôt public.</p>
           <a class="button secondary" href="https://github.com/MathieuLF/rs-clan-roster-exporter">Voir le dépôt</a>
         </article>
         <article>
-          <strong>Soutenir</strong>
+          <strong><span aria-hidden="true">💖</span> Soutenir</strong>
           <p>Le développement peut être soutenu par GitHub Sponsors.</p>
           <a class="button sponsor" href="https://github.com/sponsors/MathieuLF">Sponsor GitHub</a>
         </article>
