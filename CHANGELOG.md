@@ -4,6 +4,13 @@ Toutes les versions officielles publiées sur GitHub doivent reprendre la sectio
 
 ## [Non publié]
 
+- Ajout de `-SelfTest` et de `scripts/Test-Local.ps1` pour valider localement le parsing, les exports, les chemins spéciaux et les garde-fous HTTP sans appel réseau.
+- Amélioration de l'interopérabilité Windows/Linux/macOS avec shebang `pwsh`, ouverture de dossier best-effort et chemins de sortie durcis.
+- Cohérence du User-Agent avec la version applicative et arrêt plus rapide sur les erreurs HTTP permanentes.
+- La publication officielle lance maintenant la validation locale avant de créer les assets, le tag et la release.
+- Ajout d'un mode `-NetworkSmoke` à `scripts/Test-Local.ps1` pour valider un export OSRS réel à la demande.
+- Interface console et microsite plus vivants : symboles colorés en PowerShell 7, palette enrichie, boutons illustrés et animations légères.
+
 ## [0.1.0] - 2026-06-24
 
 - Première mise en ligne officielle de RuneScape Clan Roster Exporter.
