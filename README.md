@@ -21,6 +21,7 @@ Versions officielles : [GitHub Releases](https://github.com/MathieuLF/rs-clan-ro
 - Export OSRS via l'API publique Wise Old Man.
 - Mode interactif simple avec des choix de menu par chiffre : RS3, OSRS ou les deux.
 - Mode automatisable avec paramètres PowerShell.
+- Compatible Windows PowerShell 5.1 sur Windows et PowerShell 7+ sur Windows, Linux et macOS.
 - Sorties Markdown et CSV en UTF-8 avec BOM, pratiques pour Excel, GitHub et PowerShell.
 - Dossier `output` créé à côté du script, peu importe le dossier courant de PowerShell.
 - Aperçu console, progression, retries réseau et sauvegarde locale de récupération.
@@ -28,7 +29,8 @@ Versions officielles : [GitHub Releases](https://github.com/MathieuLF/rs-clan-ro
 
 ## Prérequis
 
-- Windows PowerShell 5.1 ou PowerShell 7+.
+- Windows PowerShell 5.1 ou PowerShell 7+ sur Windows.
+- PowerShell 7+ sur Linux ou macOS.
 - Accès Internet pour joindre les endpoints publics RS3 ou Wise Old Man.
 - Un terminal PowerShell. Les exemples ci-dessous supposent que tu es dans le dossier du projet.
 
@@ -38,6 +40,12 @@ Depuis le dossier du script :
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1
+```
+
+Sur Linux ou macOS avec PowerShell 7+ :
+
+```powershell
+pwsh ./Get-RunescapeClanMembers.ps1
 ```
 
 Afficher la version du script :
@@ -153,6 +161,7 @@ Pour OSRS, `Kills` reste vide parce que Wise Old Man ne fournit pas cette inform
 | `-RequestDelaySec 2` | Définit le délai minimal entre deux appels HTTP |
 | `-KeepRecoveryFile` | Conserve le fichier local de récupération |
 | `-RepositoryUrl "https://github.com/..."` | Ajoute l'URL du dépôt au User-Agent |
+| `-SelfTest` | Lance les tests internes locaux sans appel réseau |
 
 ## Résultats partiels et erreurs
 
@@ -190,6 +199,29 @@ Cette commande lance le script pour cette exécution seulement.
 - En mode RS3 + OSRS, chaque source est traitée séparément : un échec OSRS ne bloque pas l'export RS3, et inversement.
 - Les paramètres textuels restent disponibles pour l'automatisation, même si le mode interactif privilégie les chiffres.
 - Le lien `file:///...` est une aide pratique; son côté cliquable dépend du terminal utilisé.
+- `-OpenFolder` tente d'ouvrir le dossier de sortie avec l'association locale du système. Si l'environnement ne le permet pas, le chemin reste affiché et l'export n'échoue pas.
+
+## Validation locale
+
+Lancer les garde-fous locaux sans contacter Jagex ni Wise Old Man :
+
+```powershell
+pwsh -NoProfile -File .\Get-RunescapeClanMembers.ps1 -SelfTest
+```
+
+Depuis le dépôt, la commande complète vérifie aussi les hôtes PowerShell disponibles et l'analyse statique si `PSScriptAnalyzer` est installé :
+
+```powershell
+pwsh -NoProfile -File .\scripts\Test-Local.ps1
+```
+
+Ajouter un smoke test réseau réel OSRS, en plus des validations locales :
+
+```powershell
+pwsh -NoProfile -File .\scripts\Test-Local.ps1 -NetworkSmoke
+```
+
+La validation standard reste volontairement sans appel réseau. Pour une sortie console entièrement textuelle, définis `RS_CLAN_PLAIN_UI=1` avant de lancer le script.
 
 ## Mise en ligne officielle
 
@@ -198,6 +230,7 @@ Le dépôt utilise une version SemVer dans `VERSION`, un `CHANGELOG.md` et des a
 Préparer les fichiers de release :
 
 ```powershell
+.\scripts\Test-Local.ps1
 .\scripts\Build-Release.ps1 -Version 0.1.0 -Clean
 ```
 
