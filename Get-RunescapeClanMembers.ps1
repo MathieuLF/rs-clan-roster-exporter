@@ -63,7 +63,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
-$script:ApplicationVersion = "0.1.0"
+$script:ApplicationVersion = "0.2.0"
 $script:LastHttpRequestAt = $null
 $script:ConfiguredRetryBaseDelaySec = $RetryBaseDelaySec
 $script:ConfiguredMaxRetryDelaySec = $MaxRetryDelaySec

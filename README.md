@@ -231,13 +231,13 @@ Préparer les fichiers de release :
 
 ```powershell
 .\scripts\Test-Local.ps1
-.\scripts\Build-Release.ps1 -Version 0.1.0 -Clean
+.\scripts\Build-Release.ps1 -Version 0.2.0 -Clean
 ```
 
 Publier une mise en ligne officielle depuis `main` :
 
 ```powershell
-.\scripts\Publish-Release.ps1 -Version 0.1.0
+.\scripts\Publish-Release.ps1 -Version 0.2.0
 ```
 
 La publication crée un tag `vX.Y.Z`, pousse le tag, joint le script versionné, le ZIP portable, les empreintes SHA256, le manifeste JSON et les notes de mise en ligne. Le microsite lit ensuite GitHub Releases pour mettre à jour son encart de téléchargement.

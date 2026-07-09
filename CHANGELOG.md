@@ -4,6 +4,8 @@ Toutes les versions officielles publiées sur GitHub doivent reprendre la sectio
 
 ## [Non publié]
 
+## [0.2.0] - 2026-07-09
+
 - Ajout de `-SelfTest` et de `scripts/Test-Local.ps1` pour valider localement le parsing, les exports, les chemins spéciaux et les garde-fous HTTP sans appel réseau.
 - Amélioration de l'interopérabilité Windows/Linux/macOS avec shebang `pwsh`, ouverture de dossier best-effort et chemins de sortie durcis.
 - Cohérence du User-Agent avec la version applicative et arrêt plus rapide sur les erreurs HTTP permanentes.
