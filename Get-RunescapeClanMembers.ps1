@@ -1,16 +1,16 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Exporte les membres d'un clan RuneScape 3 ou d'un groupe OSRS.
+  Exports members from a RuneScape 3 clan or OSRS group.
 
 .DESCRIPTION
-  Le script peut fonctionner en mode interactif ou avec paramètres.
+  The script can run interactively or with parameters.
 
-  RS3 utilise l'endpoint public Jagex Clan Members Lite.
-  OSRS utilise l'API publique Wise Old Man, car OSRS n'expose pas le même CSV
-  public Jagex pour les clans.
+  RS3 uses the public Jagex Clan Members Lite endpoint.
+  OSRS uses the public Wise Old Man API because OSRS does not expose the same
+  public Jagex clan CSV.
 
-  Formats de sortie disponibles :
+  Available output formats:
     - Markdown
     - CSV
 
@@ -27,7 +27,7 @@
   .\Get-RunescapeClanMembers.ps1 -Game Both -ClanName "KnightSlayer" -OutputFormat Csv
 
 .NOTES
-  Compatible Windows PowerShell 5.1+ et PowerShell 7+.
+  Compatible with Windows PowerShell 5.1+ and PowerShell 7+.
 #>
 
 [CmdletBinding()]
@@ -90,21 +90,21 @@ function Initialize-Console {
         $global:OutputEncoding = $utf8Bom
         $PSDefaultParameterValues["Out-File:Encoding"] = "utf8"
     } catch {
-        Write-Verbose "Impossible d'ajuster l'encodage de la console : $($_.Exception.Message)"
+        Write-Verbose "Could not adjust console encoding: $($_.Exception.Message)"
     }
 
     if ($env:OS -eq "Windows_NT" -and -not [Console]::IsOutputRedirected) {
         try {
             cmd.exe /c "chcp 65001 >nul" | Out-Null
         } catch {
-            Write-Verbose "Impossible de changer la page de code console : $($_.Exception.Message)"
+            Write-Verbose "Could not change the console code page: $($_.Exception.Message)"
         }
     }
 
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     } catch {
-        Write-Verbose "Impossible de forcer TLS 1.2 dans cet hôte : $($_.Exception.Message)"
+        Write-Verbose "Could not force TLS 1.2 in this host: $($_.Exception.Message)"
     }
 }
 
@@ -123,7 +123,7 @@ function Write-Console {
         }
     }
     catch {
-        Write-Verbose "Écriture via l'hôte PowerShell impossible : $($_.Exception.Message)"
+        Write-Verbose "Could not write through the PowerShell host: $($_.Exception.Message)"
         Write-Information -MessageData $Message -InformationAction Continue
     }
 }
@@ -213,12 +213,12 @@ function Write-LocalPath {
     }
 
     $fullPath = [System.IO.Path]::GetFullPath($Path)
-    Write-Ok "$Label : $fullPath"
+    Write-Ok "${Label}: $fullPath"
 
     $fileUri = ConvertTo-FileUri -Path $fullPath
 
     if (-not [string]::IsNullOrWhiteSpace($fileUri)) {
-        Write-Info "Lien local : $fileUri"
+        Write-Info "Local link: $fileUri"
     }
 }
 
@@ -229,7 +229,7 @@ function Open-OutputDirectory {
     )
 
     if ([string]::IsNullOrWhiteSpace($Path)) {
-        Write-Warn2 "Aucun dossier de sortie à ouvrir."
+        Write-Warn2 "No output folder to open."
         return $false
     }
 
@@ -237,12 +237,12 @@ function Open-OutputDirectory {
         $fullPath = [System.IO.Path]::GetFullPath($Path)
     }
     catch {
-        Write-Warn2 "Chemin de sortie invalide : $Path"
+        Write-Warn2 "Invalid output path: $Path"
         return $false
     }
 
     if (-not (Test-Path -LiteralPath $fullPath -PathType Container)) {
-        Write-Warn2 "Le dossier de sortie est introuvable : $fullPath"
+        Write-Warn2 "Output folder not found: $fullPath"
         return $false
     }
 
@@ -255,8 +255,8 @@ function Open-OutputDirectory {
         return $true
     }
     catch {
-        Write-Warn2 "Impossible d'ouvrir automatiquement le dossier de sortie : $fullPath"
-        Write-Warn2 "Ouvre-le manuellement depuis le chemin affiché ci-dessus."
+        Write-Warn2 "Could not open the output folder automatically: $fullPath"
+        Write-Warn2 "Open it manually from the path shown above."
         return $false
     }
 }
@@ -284,7 +284,7 @@ function ConvertTo-Game {
         "^(3|both|all|tout|tous|les\s*deux|rs3\s*\+\s*osrs|osrs\s*\+\s*rs3)$" { return "Both" }
     }
 
-    throw "Jeu invalide : '$Value'. Valeurs acceptées : RS3, OSRS ou Both."
+    throw "Invalid game: '$Value'. Accepted values: RS3, OSRS, or Both."
 }
 
 function ConvertTo-OutputFormat {
@@ -301,7 +301,7 @@ function ConvertTo-OutputFormat {
         "^(2|csv)$" { return "Csv" }
     }
 
-    throw "Format invalide : '$Value'. Valeurs acceptées : Markdown ou CSV."
+    throw "Invalid format: '$Value'. Accepted values: Markdown or CSV."
 }
 
 function ConvertTo-ClanName {
@@ -316,15 +316,15 @@ function ConvertTo-ClanName {
     $clean = $clean -replace "\s+", " "
 
     if ($clean.Length -lt 2) {
-        throw "Le nom du clan doit contenir au moins 2 caractères."
+        throw "The clan name must contain at least 2 characters."
     }
 
     if ($clean.Length -gt 100) {
-        throw "Le nom du clan est trop long. Limite : 100 caractères."
+        throw "The clan name is too long. Limit: 100 characters."
     }
 
     if ($clean -match "[\x00-\x1F]") {
-        throw "Le nom du clan contient un caractère de contrôle invalide."
+        throw "The clan name contains an invalid control character."
     }
 
     return $clean
@@ -338,11 +338,11 @@ function Read-Choice {
     )
 
     if ($null -eq $AllowedValues -or $AllowedValues.Count -eq 0) {
-        throw "Aucun choix disponible pour la question : $Question"
+        throw "No choices available for this question: $Question"
     }
 
     if ($null -ne $Labels -and $Labels.Count -ne $AllowedValues.Count) {
-        throw "La liste des libellés doit contenir autant d'éléments que la liste des choix."
+        throw "The label list must contain the same number of items as the choice list."
     }
 
     $range = if ($AllowedValues.Count -eq 1) { "1" } else { "1-$($AllowedValues.Count)" }
@@ -360,7 +360,7 @@ function Read-Choice {
             Write-Console ("  {0}) {1}" -f ($i + 1), $label) -ForegroundColor White
         }
 
-        $answer = Read-Host "Ton choix ($range)"
+        $answer = Read-Host "Your choice ($range)"
 
         $choice = 0
 
@@ -368,7 +368,7 @@ function Read-Choice {
             return $AllowedValues[$choice - 1]
         }
 
-        Write-Warn2 "Réponse attendue : un chiffre entre 1 et $($AllowedValues.Count)."
+        Write-Warn2 "Expected answer: a number between 1 and $($AllowedValues.Count)."
     }
 }
 
@@ -405,33 +405,33 @@ function Resolve-InteractiveOption {
 
     if ([string]::IsNullOrWhiteSpace($resolvedGame)) {
         if (-not (Test-CanPrompt)) {
-            throw "Le paramètre -Game est requis en mode non interactif. Valeurs : RS3, OSRS ou Both."
+            throw "The -Game parameter is required in non-interactive mode. Values: RS3, OSRS, or Both."
         }
 
         Write-Console ""
-        $resolvedGame = Read-Choice -Question "Jeu cible" -AllowedValues @("RS3", "OSRS", "Both") -Labels @("RS3 : clan RuneScape 3 via Jagex", "OSRS : groupe OSRS via Wise Old Man", "Les deux : rechercher dans RS3 et OSRS")
+        $resolvedGame = Read-Choice -Question "Target game" -AllowedValues @("RS3", "OSRS", "Both") -Labels @("RS3: RuneScape 3 clan through Jagex", "OSRS: OSRS group through Wise Old Man", "Both: search RS3 and OSRS")
     }
 
     if ([string]::IsNullOrWhiteSpace($resolvedClan) -and -not ($resolvedGame -eq "OSRS" -and $OsrsGroupId -gt 0)) {
         if (-not (Test-CanPrompt)) {
-            throw "Le paramètre -ClanName est requis en mode non interactif."
+            throw "The -ClanName parameter is required in non-interactive mode."
         }
 
         if ($resolvedGame -eq "OSRS") {
-            $resolvedClan = Read-RequiredText -Question "Nom du groupe/clan OSRS à rechercher"
+            $resolvedClan = Read-RequiredText -Question "OSRS group/clan name to search"
         } elseif ($resolvedGame -eq "Both") {
-            $resolvedClan = Read-RequiredText -Question "Nom du clan/groupe à rechercher dans RS3 et OSRS"
+            $resolvedClan = Read-RequiredText -Question "Clan/group name to search in RS3 and OSRS"
         } else {
-            $resolvedClan = Read-RequiredText -Question "Nom du clan RS3 à rechercher"
+            $resolvedClan = Read-RequiredText -Question "RS3 clan name to search"
         }
     }
 
     if ([string]::IsNullOrWhiteSpace($resolvedFormat)) {
         if (-not (Test-CanPrompt)) {
-            throw "Le paramètre -OutputFormat est requis en mode non interactif. Valeurs : Markdown ou CSV."
+            throw "The -OutputFormat parameter is required in non-interactive mode. Values: Markdown or CSV."
         }
 
-        $resolvedFormat = Read-Choice -Question "Format de sortie" -AllowedValues @("Markdown", "Csv") -Labels @("Markdown (.md)", "CSV (.csv)")
+        $resolvedFormat = Read-Choice -Question "Output format" -AllowedValues @("Markdown", "Csv") -Labels @("Markdown (.md)", "CSV (.csv)")
     }
 
     [PSCustomObject]@{
@@ -502,10 +502,10 @@ function Wait-RequestPace {
         return
     }
 
-    Write-Info "Pause réseau douce de $remaining seconde(s) avant le prochain appel."
+    Write-Info "Gentle network pause of $remaining second(s) before the next call."
 
     for ($i = $remaining; $i -gt 0; $i--) {
-        Write-Progress -Activity $Purpose -Status "Pause réseau respectueuse ($i s)" -SecondsRemaining $i -PercentComplete 5
+        Write-Progress -Activity $Purpose -Status "Respectful network pause ($i s)" -SecondsRemaining $i -PercentComplete 5
         Start-Sleep -Seconds 1
     }
 }
@@ -595,13 +595,13 @@ function Wait-RetryDelay {
         return
     }
 
-    Write-Info "Pause $Seconds seconde(s), puis nouvelle tentative."
+    Write-Info "Pausing $Seconds second(s), then retrying."
 
     for ($remaining = $Seconds; $remaining -gt 0; $remaining--) {
-        Write-Progress -Activity $Purpose -Status "Nouvelle tentative dans $remaining s" -SecondsRemaining $remaining -PercentComplete 10
+        Write-Progress -Activity $Purpose -Status "Retry in $remaining s" -SecondsRemaining $remaining -PercentComplete 10
 
         if ($remaining -le 3 -or $remaining % 10 -eq 0) {
-            Write-Info "Reprise dans $remaining seconde(s)..."
+            Write-Info "Resuming in $remaining second(s)..."
         }
 
         Start-Sleep -Seconds 1
@@ -623,9 +623,9 @@ function Invoke-HttpText {
     for ($attempt = 1; $attempt -le $MaxRetries; $attempt++) {
         try {
             $percent = [Math]::Min(95, [int](($attempt / [Math]::Max($MaxRetries, 1)) * 60))
-            Write-Progress -Activity $Purpose -Status "Tentative $attempt/$MaxRetries" -PercentComplete $percent
+            Write-Progress -Activity $Purpose -Status "Attempt $attempt/$MaxRetries" -PercentComplete $percent
             Wait-RequestPace -MinimumDelaySec $RequestDelaySec -Purpose $Purpose
-            Write-Info "Tentative $attempt/$MaxRetries : $Url"
+            Write-Info "Attempt $attempt/${MaxRetries}: $Url"
 
             $request = @{
                 Uri        = $Url
@@ -642,7 +642,7 @@ function Invoke-HttpText {
             $script:LastHttpRequestAt = Get-Date
 
             if ($null -eq $response -or [string]::IsNullOrWhiteSpace([string]$response.Content)) {
-                throw "Réponse vide."
+                throw "Empty response."
             }
 
             Write-Progress -Activity $Purpose -Completed
@@ -654,14 +654,14 @@ function Invoke-HttpText {
             $statusCode = Get-HttpStatusCode -ErrorRecord $_
 
             if ($null -ne $statusCode) {
-                Write-Warn2 "Échec tentative $attempt (HTTP $statusCode) : $lastMessage"
+                Write-Warn2 "Attempt $attempt failed (HTTP $statusCode): $lastMessage"
             } else {
-                Write-Warn2 "Échec tentative $attempt : $lastMessage"
+                Write-Warn2 "Attempt $attempt failed: $lastMessage"
             }
 
             if ($null -ne $statusCode -and (Test-IsPermanentHttpStatusCode -StatusCode $statusCode)) {
                 Write-Progress -Activity $Purpose -Completed
-                throw "Erreur HTTP permanente ($statusCode) pendant '$Purpose'. La requête ne sera pas retentée. Dernière erreur : $lastMessage"
+                throw "Permanent HTTP error ($statusCode) during '$Purpose'. The request will not be retried. Last error: $lastMessage"
             }
 
             if ($attempt -lt $MaxRetries) {
@@ -672,7 +672,7 @@ function Invoke-HttpText {
     }
 
     Write-Progress -Activity $Purpose -Completed
-    throw "Toutes les tentatives ont échoué. Dernière erreur : $lastMessage"
+    throw "All attempts failed. Last error: $lastMessage"
 }
 
 function Invoke-HttpJson {
@@ -689,7 +689,7 @@ function Invoke-HttpJson {
         return $content | ConvertFrom-Json
     }
     catch {
-        throw "La réponse JSON n'a pas pu être lue. Détail : $($_.Exception.Message). Réponse reçue : $(Get-ResponseSample -Text $content)"
+        throw "The JSON response could not be read. Detail: $($_.Exception.Message). Response received: $(Get-ResponseSample -Text $content)"
     }
 }
 
@@ -750,11 +750,11 @@ function ConvertFrom-Rs3ClanMembersCsv {
     $trimmed = $CsvText.Trim()
 
     if ([string]::IsNullOrWhiteSpace($trimmed)) {
-        throw "Le CSV retourné est vide."
+        throw "The returned CSV is empty."
     }
 
     if ($trimmed -match "^\s*(<!doctype|<html|<\?xml)" -or $trimmed -match "(?i)\b(access denied|temporarily unavailable)\b") {
-        throw "Jagex a retourné une page d'erreur au lieu du CSV. Réponse reçue : $(Get-ResponseSample -Text $trimmed)"
+        throw "Jagex returned an error page instead of CSV. Response received: $(Get-ResponseSample -Text $trimmed)"
     }
 
     $firstLine = ($trimmed -replace "^\uFEFF", "") -split "\r?\n" |
@@ -762,7 +762,7 @@ function ConvertFrom-Rs3ClanMembersCsv {
         Select-Object -First 1
 
     if ([string]::IsNullOrWhiteSpace($firstLine) -or $firstLine -notmatch ",") {
-        throw "La réponse ne ressemble pas à un CSV. Réponse reçue : $(Get-ResponseSample -Text $trimmed)"
+        throw "The response does not look like CSV. Response received: $(Get-ResponseSample -Text $trimmed)"
     }
 
     $hasHeader = ($firstLine -match "(?i)\b(clanmate|clan rank|total xp|kills)\b")
@@ -775,7 +775,7 @@ function ConvertFrom-Rs3ClanMembersCsv {
         }
     }
     catch {
-        throw "Le CSV retourné n'a pas pu être lu. Détail : $($_.Exception.Message). Réponse reçue : $(Get-ResponseSample -Text $trimmed)"
+        throw "The returned CSV could not be read. Detail: $($_.Exception.Message). Response received: $(Get-ResponseSample -Text $trimmed)"
     }
 
     $members = foreach ($row in $rows) {
@@ -802,7 +802,7 @@ function ConvertFrom-Rs3ClanMembersCsv {
     $members = @($members)
 
     if ($members.Count -eq 0) {
-        throw "Aucun membre n'a pu être lu dans le CSV."
+        throw "No member could be read from the CSV."
     }
 
     return $members
@@ -822,7 +822,7 @@ function Get-Rs3ClanMember {
     )
 
     if ($AllowInsecureFallback) {
-        Write-Warn2 "Fallback HTTP activé explicitement. Préfère HTTPS quand c'est possible."
+        Write-Warn2 "HTTP fallback explicitly enabled. Prefer HTTPS when possible."
         $urls += "http://services.runescape.com/m=clan-hiscores/members_lite.ws?clanName=$encodedClan"
     }
 
@@ -830,16 +830,16 @@ function Get-Rs3ClanMember {
 
     foreach ($url in $urls) {
         try {
-            $csvText = Invoke-HttpText -Url $url -Accept "text/csv,text/plain,*/*" -TimeoutSec $TimeoutSec -MaxRetries $MaxRetries -Purpose "Recherche RS3"
+            $csvText = Invoke-HttpText -Url $url -Accept "text/csv,text/plain,*/*" -TimeoutSec $TimeoutSec -MaxRetries $MaxRetries -Purpose "RS3 search"
             return ConvertFrom-Rs3ClanMembersCsv -CsvText $csvText -ClanName $ClanName
         }
         catch {
             $lastMessage = $_.Exception.Message
-            Write-Warn2 "Endpoint non concluant : $url"
+            Write-Warn2 "Endpoint did not return usable data: $url"
         }
     }
 
-    throw "Impossible de récupérer les membres RS3 pour '$ClanName'. Dernière erreur : $lastMessage"
+    throw "Could not retrieve RS3 members for '$ClanName'. Last error: $lastMessage"
 }
 
 function Select-OsrsGroup {
@@ -851,7 +851,7 @@ function Select-OsrsGroup {
     $groups = @($Groups | Where-Object { $null -ne $_ })
 
     if ($groups.Count -eq 0) {
-        throw "Aucun groupe OSRS Wise Old Man ne correspond à '$ClanName'."
+        throw "No Wise Old Man OSRS group matches '$ClanName'."
     }
 
     $exact = @($groups | Where-Object {
@@ -864,11 +864,11 @@ function Select-OsrsGroup {
     }
 
     if ($groups.Count -eq 1) {
-        Write-Warn2 "Aucun nom exact trouvé. Sélection du seul résultat disponible : $($groups[0].name)."
+        Write-Warn2 "No exact name found. Selecting the only available result: $($groups[0].name)."
         return $groups[0]
     }
 
-    Write-Warn2 "Plusieurs groupes OSRS correspondent à ta recherche."
+    Write-Warn2 "Several OSRS groups match your search."
     Write-Console ""
 
     for ($i = 0; $i -lt $groups.Count; $i++) {
@@ -879,22 +879,22 @@ function Select-OsrsGroup {
             $chat = " | clan chat: $($group.clanChat)"
         }
 
-        Write-Console ("  {0}) {1} ({2} membres{3}, id {4})" -f ($i + 1), $group.name, $group.memberCount, $chat, $group.id)
+        Write-Console ("  {0}) {1} ({2} members{3}, id {4})" -f ($i + 1), $group.name, $group.memberCount, $chat, $group.id)
     }
 
     if (-not (Test-CanPrompt)) {
-        throw "Plusieurs groupes OSRS correspondent. Relance avec un nom plus précis ou avec -OsrsGroupId."
+        throw "Several OSRS groups match. Run again with a more precise name or with -OsrsGroupId."
     }
 
     while ($true) {
-        $answer = Read-Host "Choisis le groupe OSRS à utiliser [1-$($groups.Count)]"
+        $answer = Read-Host "Choose the OSRS group to use [1-$($groups.Count)]"
         $choice = 0
 
         if ([int]::TryParse($answer, [ref]$choice) -and $choice -ge 1 -and $choice -le $groups.Count) {
             return $groups[$choice - 1]
         }
 
-        Write-Warn2 "Réponse attendue : un chiffre entre 1 et $($groups.Count)."
+        Write-Warn2 "Expected answer: a number between 1 and $($groups.Count)."
     }
 }
 
@@ -907,7 +907,7 @@ function ConvertFrom-OsrsGroupDetails {
     $memberships = Get-ObjectPropertyValue -Object $Details -Name "memberships"
 
     if ($null -eq $Details -or $null -eq $memberships) {
-        throw "Wise Old Man n'a pas retourné de liste de membres pour le groupe id $GroupId."
+        throw "Wise Old Man did not return a member list for group id $GroupId."
     }
 
     $groupName = ConvertTo-ClanValue -Value (Get-ObjectPropertyValue -Object $Details -Name "name")
@@ -946,7 +946,7 @@ function ConvertFrom-OsrsGroupDetails {
     $members = @($members)
 
     if ($members.Count -eq 0) {
-        throw "Aucun membre OSRS lisible n'a été trouvé pour le groupe '$groupName'."
+        throw "No readable OSRS member was found for group '$groupName'."
     }
 
     return $members
@@ -960,7 +960,7 @@ function Get-OsrsClanMember {
         [int]$MaxRetries
     )
 
-    Write-Warn2 "OSRS : recherche via Wise Old Man. Les données viennent d'un groupe public WOM, pas d'un CSV Jagex officiel."
+    Write-Warn2 "OSRS: searching through Wise Old Man. Data comes from a public WOM group, not from an official Jagex CSV."
 
     $selectedGroup = $null
 
@@ -972,14 +972,14 @@ function Get-OsrsClanMember {
     } else {
         $encodedName = [uri]::EscapeDataString($ClanName)
         $searchUrl = "https://api.wiseoldman.net/v2/groups?name=$encodedName&limit=10"
-        $groups = @(Invoke-HttpJson -Url $searchUrl -TimeoutSec $TimeoutSec -MaxRetries $MaxRetries -Purpose "Recherche OSRS")
+        $groups = @(Invoke-HttpJson -Url $searchUrl -TimeoutSec $TimeoutSec -MaxRetries $MaxRetries -Purpose "OSRS search")
         $selectedGroup = Select-OsrsGroup -Groups $groups -ClanName $ClanName
     }
 
-    Write-Info "Groupe OSRS sélectionné : $($selectedGroup.name) (id $($selectedGroup.id))"
+    Write-Info "Selected OSRS group: $($selectedGroup.name) (id $($selectedGroup.id))"
 
     $detailsUrl = "https://api.wiseoldman.net/v2/groups/$($selectedGroup.id)"
-    $details = Invoke-HttpJson -Url $detailsUrl -TimeoutSec $TimeoutSec -MaxRetries $MaxRetries -Purpose "Lecture des membres OSRS"
+    $details = Invoke-HttpJson -Url $detailsUrl -TimeoutSec $TimeoutSec -MaxRetries $MaxRetries -Purpose "Read OSRS members"
 
     return ConvertFrom-OsrsGroupDetails -Details $details -GroupId $selectedGroup.id
 }
@@ -998,7 +998,7 @@ function Get-OutputDirectory {
     }
 
     if (Test-Path -LiteralPath $fullPath -PathType Leaf) {
-        throw "Le chemin de sortie existe déjà comme fichier : $fullPath"
+        throw "The output path already exists as a file: $fullPath"
     }
 
     if (-not (Test-Path -LiteralPath $fullPath -PathType Container)) {
@@ -1029,7 +1029,7 @@ function Write-AtomicTextFileUtf8 {
     param(
         [string]$Path,
         [string]$Content,
-        [string]$Activity = "Écriture du fichier"
+        [string]$Activity = "Writing file"
     )
 
     $directory = Split-Path -Path $Path -Parent
@@ -1043,13 +1043,13 @@ function Write-AtomicTextFileUtf8 {
     $writer = $null
 
     try {
-        Write-Progress -Activity $Activity -Status "Écriture temporaire" -PercentComplete 40
+        Write-Progress -Activity $Activity -Status "Writing temporary file" -PercentComplete 40
         $writer = New-Object System.IO.StreamWriter($tempPath, $false, $encoding)
         $writer.Write($Content)
         $writer.Flush()
     }
     catch {
-        Write-Warn2 "Écriture interrompue. Fichier temporaire conservé si présent : $tempPath"
+        Write-Warn2 "Write interrupted. Temporary file kept if present: $tempPath"
         throw
     }
     finally {
@@ -1058,7 +1058,7 @@ function Write-AtomicTextFileUtf8 {
         }
     }
 
-    Write-Progress -Activity $Activity -Status "Finalisation atomique" -PercentComplete 90
+    Write-Progress -Activity $Activity -Status "Atomic finalization" -PercentComplete 90
     Move-Item -LiteralPath $tempPath -Destination $Path -Force
     Write-Progress -Activity $Activity -Completed
 }
@@ -1091,15 +1091,15 @@ function Write-LinesAtomicUtf8 {
 
             if (($i + 1) % $ChunkSize -eq 0 -or ($i + 1) -eq $lineList.Count) {
                 $percent = [Math]::Min(95, [int]((($i + 1) / $total) * 90))
-                Write-Progress -Activity $Activity -Status "Écriture $($i + 1)/$($lineList.Count) ligne(s)" -PercentComplete $percent
-                Write-Info "Écriture $($i + 1)/$($lineList.Count) ligne(s)..."
+                Write-Progress -Activity $Activity -Status "Writing $($i + 1)/$($lineList.Count) line(s)" -PercentComplete $percent
+                Write-Info "Writing $($i + 1)/$($lineList.Count) line(s)..."
             }
         }
 
         $writer.Flush()
     }
     catch {
-        Write-Warn2 "Écriture interrompue. Fichier temporaire conservé si présent : $tempPath"
+        Write-Warn2 "Write interrupted. Temporary file kept if present: $tempPath"
         throw
     }
     finally {
@@ -1108,7 +1108,7 @@ function Write-LinesAtomicUtf8 {
         }
     }
 
-    Write-Progress -Activity $Activity -Status "Finalisation atomique" -PercentComplete 98
+    Write-Progress -Activity $Activity -Status "Atomic finalization" -PercentComplete 98
     Move-Item -LiteralPath $tempPath -Destination $Path -Force
     Write-Progress -Activity $Activity -Completed
 }
@@ -1123,11 +1123,11 @@ function ConvertTo-MarkdownLine {
     $lines = New-Object System.Collections.Generic.List[string]
     $generatedAt = Get-Date -Format "yyyy-MM-dd HH:mm:ss K"
 
-    $lines.Add("# Membres du clan $ClanName")
+    $lines.Add("# $ClanName Clan Members")
     $lines.Add("")
-    $lines.Add("- Jeu : $Game")
-    $lines.Add("- Membres : $($Members.Count)")
-    $lines.Add("- Généré le : $generatedAt")
+    $lines.Add("- Game: $Game")
+    $lines.Add("- Members: $($Members.Count)")
+    $lines.Add("- Generated at: $generatedAt")
 
     if ($Game -eq "OSRS") {
         $lines.Add("- Source : Wise Old Man API")
@@ -1184,9 +1184,9 @@ function Save-RecoverySnapshot {
         Members      = $Members
     }
 
-    Write-Info "Sauvegarde de récupération : $recoveryPath"
+    Write-Info "Recovery snapshot: $recoveryPath"
     $json = $snapshot | ConvertTo-Json -Depth 8
-    Write-AtomicTextFileUtf8 -Path $recoveryPath -Content $json -Activity "Sauvegarde de récupération"
+    Write-AtomicTextFileUtf8 -Path $recoveryPath -Content $json -Activity "Recovery snapshot"
 
     return $recoveryPath
 }
@@ -1200,12 +1200,12 @@ function Remove-RecoverySnapshot {
     }
 
     try {
-        if ($PSCmdlet.ShouldProcess($Path, "Supprimer le fichier de récupération")) {
+        if ($PSCmdlet.ShouldProcess($Path, "Delete recovery file")) {
             Remove-Item -LiteralPath $Path -Force
         }
     }
     catch {
-        Write-Warn2 "Impossible de supprimer le fichier de récupération : $Path"
+        Write-Warn2 "Could not delete the recovery file: $Path"
     }
 }
 
@@ -1220,7 +1220,7 @@ function Export-Member {
         [string]$FileTimestamp
     )
 
-    Write-Progress -Activity "Génération du fichier" -Status "Préparation du dossier de sortie" -PercentComplete 10
+    Write-Progress -Activity "File generation" -Status "Preparing output folder" -PercentComplete 10
     $resolvedOutputDir = Get-OutputDirectory -OutputDir $OutputDir
 
     $slug = Get-SafeSlug -Text $ClanName
@@ -1232,22 +1232,22 @@ function Export-Member {
 
     if ($OutputFormat -eq "Csv") {
         $outputPath = Join-Path -Path $resolvedOutputDir -ChildPath "$gameSlug-$slug-members-$FileTimestamp.csv"
-        Write-Info "Génération CSV : $outputPath"
+        Write-Info "CSV generation: $outputPath"
 
         $csvLines = @($Members |
             Select-Object Game, Clan, Pseudo, Rang, XP, Kills |
             ConvertTo-Csv -NoTypeInformation)
 
-        Write-LinesAtomicUtf8 -Path $outputPath -Lines $csvLines -Activity "Génération CSV" -ChunkSize $OutputChunkSize
+        Write-LinesAtomicUtf8 -Path $outputPath -Lines $csvLines -Activity "CSV generation" -ChunkSize $OutputChunkSize
     } else {
         $outputPath = Join-Path -Path $resolvedOutputDir -ChildPath "$gameSlug-$slug-members-$FileTimestamp.md"
-        Write-Info "Génération Markdown : $outputPath"
+        Write-Info "Markdown generation: $outputPath"
 
         $markdownLines = ConvertTo-MarkdownLine -Members $Members -Game $Game -ClanName $ClanName
-        Write-LinesAtomicUtf8 -Path $outputPath -Lines $markdownLines -Activity "Génération Markdown" -ChunkSize $OutputChunkSize
+        Write-LinesAtomicUtf8 -Path $outputPath -Lines $markdownLines -Activity "Markdown generation" -ChunkSize $OutputChunkSize
     }
 
-    Write-Progress -Activity "Génération du fichier" -Completed
+    Write-Progress -Activity "File generation" -Completed
     return $outputPath
 }
 
@@ -1261,17 +1261,17 @@ function Show-MemberResult {
     )
 
     Write-Console ""
-    Write-Console "$(Get-UiMarker -Kind "Search" -Fallback "==") Résultat de la recherche" -ForegroundColor White
-    Write-Console "Jeu     : $Game"
+    Write-Console "$(Get-UiMarker -Kind "Search" -Fallback "==") Search result" -ForegroundColor White
+    Write-Console "Game    : $Game"
     Write-Console "Clan    : $ClanName"
-    Write-Console "Membres : $($Members.Count)"
+    Write-Console "Members : $($Members.Count)"
     Write-Console ""
 
     if ($ShowAllInConsole -or $Members.Count -le $PreviewCount) {
         $visibleMembers = @($Members)
     } else {
         $visibleMembers = @($Members | Select-Object -First $PreviewCount)
-        Write-Warn2 "Affichage limité aux $PreviewCount premiers membres. Le fichier généré contient la liste complète."
+        Write-Warn2 "Display limited to the first $PreviewCount members. The generated file contains the full list."
         Write-Console ""
     }
 
@@ -1294,27 +1294,27 @@ function Show-MemberResult {
 }
 
 function Complete-ProgressActivity {
-    Write-Progress -Activity "Recherche RS3" -Completed
-    Write-Progress -Activity "Recherche OSRS" -Completed
-    Write-Progress -Activity "Lecture des membres OSRS" -Completed
-    Write-Progress -Activity "Génération du fichier" -Completed
-    Write-Progress -Activity "Sauvegarde de récupération" -Completed
-    Write-Progress -Activity "Génération CSV" -Completed
-    Write-Progress -Activity "Génération Markdown" -Completed
+    Write-Progress -Activity "RS3 search" -Completed
+    Write-Progress -Activity "OSRS search" -Completed
+    Write-Progress -Activity "Read OSRS members" -Completed
+    Write-Progress -Activity "File generation" -Completed
+    Write-Progress -Activity "Recovery snapshot" -Completed
+    Write-Progress -Activity "CSV generation" -Completed
+    Write-Progress -Activity "Markdown generation" -Completed
 }
 
 function Show-HelpfulExample {
     Write-Console ""
-    Write-Console "Exemples utiles :" -ForegroundColor Yellow
+    Write-Console "Useful examples:" -ForegroundColor Yellow
     Write-Console '  .\Get-RunescapeClanMembers.ps1 -Game RS3 -ClanName "Wapitiklan Empire" -OutputFormat Csv'
     Write-Console '  .\Get-RunescapeClanMembers.ps1 -Game OSRS -ClanName "KnightSlayer" -OutputFormat Csv'
     Write-Console '  .\Get-RunescapeClanMembers.ps1 -Game Both -ClanName "KnightSlayer" -OutputFormat Markdown'
     Write-Console '  .\Get-RunescapeClanMembers.ps1 -Game OSRS -OsrsGroupId 257 -OutputFormat Csv'
     Write-Console ""
     Write-Console "Notes :" -ForegroundColor Yellow
-    Write-Console "  - RS3 utilise HTTPS par défaut; l'ancien fallback HTTP demande -AllowInsecureFallback."
-    Write-Console "  - OSRS dépend de Wise Old Man; le groupe doit exister publiquement sur Wise Old Man."
-    Write-Console "  - Tu peux augmenter -TimeoutSec, -MaxRetries ou -MaxRetryDelaySec si le réseau est instable."
+    Write-Console "  - RS3 uses HTTPS by default; the legacy HTTP fallback requires -AllowInsecureFallback."
+    Write-Console "  - OSRS depends on Wise Old Man; the group must exist publicly on Wise Old Man."
+    Write-Console "  - Increase -TimeoutSec, -MaxRetries, or -MaxRetryDelaySec if the network is unstable."
 }
 
 function Get-FriendlySearchFailureMessage {
@@ -1325,14 +1325,14 @@ function Get-FriendlySearchFailureMessage {
     )
 
     if ($Game -eq "OSRS" -and $OsrsGroupId -gt 0) {
-        return "Aucun groupe OSRS Wise Old Man trouvé ou lisible pour l'identifiant $OsrsGroupId."
+        return "No readable Wise Old Man OSRS group found for id $OsrsGroupId."
     }
 
     if ($Game -eq "OSRS") {
-        return "Aucun groupe OSRS Wise Old Man trouvé ou lisible pour '$ClanName'."
+        return "No readable Wise Old Man OSRS group found for '$ClanName'."
     }
 
-    return "Aucun clan RS3 trouvé ou lisible pour '$ClanName'."
+    return "No readable RS3 clan found for '$ClanName'."
 }
 
 function Invoke-GameExport {
@@ -1352,15 +1352,15 @@ function Invoke-GameExport {
     )
 
     $recoveryPath = $null
-    $stage = "recherche"
+    $stage = "search"
 
     try {
         Write-Console ""
 
         if ($Game -eq "OSRS" -and $OsrsGroupId -gt 0 -and [string]::IsNullOrWhiteSpace($ClanName)) {
-            Write-Info "Recherche OSRS par identifiant Wise Old Man : $OsrsGroupId"
+            Write-Info "OSRS search by Wise Old Man ID: $OsrsGroupId"
         } else {
-            Write-Info "Recherche $Game : $ClanName"
+            Write-Info "$Game search: $ClanName"
         }
 
         if ($Game -eq "OSRS") {
@@ -1372,25 +1372,25 @@ function Invoke-GameExport {
         $members = @($members)
 
         if ($members.Count -eq 0) {
-            throw "Aucun membre trouvé pour $Game."
+            throw "No member found for $Game."
         }
 
-        $stage = "sauvegarde"
+        $stage = "snapshot"
         $actualClanName = $members[0].Clan
         $fileTimestamp = Get-FileTimestamp
         $recoveryPath = Save-RecoverySnapshot -Members $members -Game $Game -ClanName $actualClanName -OutputFormat $OutputFormat -OutputDir $OutputDir -FileTimestamp $fileTimestamp
 
         Show-MemberResult -Members $members -Game $Game -ClanName $actualClanName -PreviewCount $PreviewCount -ShowAllInConsole $ShowAllInConsole
 
-        $stage = "génération"
+        $stage = "generation"
         $outputPath = Export-Member -Members $members -Game $Game -ClanName $actualClanName -OutputFormat $OutputFormat -OutputDir $OutputDir -OutputChunkSize $OutputChunkSize -FileTimestamp $fileTimestamp
 
         Write-Console ""
-        Write-Ok "Export $Game terminé."
-        Write-LocalPath -Label "Fichier généré ($Game)" -Path $outputPath
+        Write-Ok "$Game export complete."
+        Write-LocalPath -Label "Generated file ($Game)" -Path $outputPath
 
         if ($KeepRecoveryFile) {
-            Write-LocalPath -Label "Fichier de récupération conservé ($Game)" -Path $recoveryPath
+            Write-LocalPath -Label "Kept recovery file ($Game)" -Path $recoveryPath
         } else {
             Remove-RecoverySnapshot -Path $recoveryPath
             $recoveryPath = $null
@@ -1410,20 +1410,20 @@ function Invoke-GameExport {
         Complete-ProgressActivity
 
         Write-Console ""
-        Write-Warn2 "$Game : aucun export généré."
+        Write-Warn2 "${Game}: no export generated."
 
-        if ($stage -eq "recherche") {
+        if ($stage -eq "search") {
             Write-Warn2 (Get-FriendlySearchFailureMessage -Game $Game -ClanName $ClanName -OsrsGroupId $OsrsGroupId)
         } else {
             Write-Warn2 $_.Exception.Message
         }
 
         if (-not [string]::IsNullOrWhiteSpace($recoveryPath) -and (Test-Path -LiteralPath $recoveryPath -PathType Leaf)) {
-            Write-Warn2 "Recherche déjà sauvegardée ici : $recoveryPath"
+            Write-Warn2 "Search already saved here: $recoveryPath"
             $recoveryUri = ConvertTo-FileUri -Path $recoveryPath
 
             if (-not [string]::IsNullOrWhiteSpace($recoveryUri)) {
-                Write-Info "Lien local : $recoveryUri"
+                Write-Info "Local link: $recoveryUri"
             }
         }
 
@@ -1463,20 +1463,20 @@ function Invoke-ExportSequence {
     Write-Console ""
 
     if ($Game -eq "Both") {
-        Write-Info "Jeux sélectionnés : RS3 et OSRS"
+        Write-Info "Selected games: RS3 and OSRS"
     } else {
-        Write-Info "Jeu sélectionné : $Game"
+        Write-Info "Selected game: $Game"
     }
 
     if ($Game -eq "OSRS" -and $OsrsGroupId -gt 0 -and [string]::IsNullOrWhiteSpace($ClanName)) {
-        Write-Info "Recherche par identifiant Wise Old Man : $OsrsGroupId"
+        Write-Info "Search by Wise Old Man ID: $OsrsGroupId"
     } else {
-        Write-Info "Recherche du clan/groupe : $ClanName"
+        Write-Info "Clan/group search: $ClanName"
     }
 
-    Write-Info "Format de sortie : $OutputFormat"
-    Write-Info "Dossier de sortie : $resolvedOutputDir"
-    Write-Info "Mode réseau : appels séquentiels, délai minimum $RequestDelaySec s, retries espacés, aucun identifiant requis."
+    Write-Info "Output format: $OutputFormat"
+    Write-Info "Output folder: $resolvedOutputDir"
+    Write-Info "Network mode: sequential calls, minimum delay $RequestDelaySec s, spaced retries, no credentials required."
 
     $results = foreach ($gameToRun in $gamesToRun) {
         Invoke-GameExport `
@@ -1499,19 +1499,19 @@ function Invoke-ExportSequence {
     $failedResults = @($results | Where-Object { -not $_.Success })
 
     Write-Console ""
-    Write-Console "$(Get-UiMarker -Kind "Summary" -Fallback "==") Résumé" -ForegroundColor White
+    Write-Console "$(Get-UiMarker -Kind "Summary" -Fallback "==") Summary" -ForegroundColor White
 
     foreach ($result in $successfulResults) {
-        Write-Ok "$($result.Game) : $($result.MemberCount) membre(s) exporté(s) pour '$($result.ClanName)'."
-        Write-LocalPath -Label "Fichier $($result.Game)" -Path $result.OutputPath
+        Write-Ok "$($result.Game): $($result.MemberCount) member(s) exported for '$($result.ClanName)'."
+        Write-LocalPath -Label "$($result.Game) file" -Path $result.OutputPath
     }
 
     foreach ($result in $failedResults) {
-        Write-Warn2 "$($result.Game) : aucun résultat exporté."
+        Write-Warn2 "$($result.Game): no result exported."
     }
 
     if ($successfulResults.Count -eq 0) {
-        Write-Warn2 "Aucun fichier n'a été généré pour cette recherche."
+        Write-Warn2 "No file was generated for this search."
     }
 
     if ($OpenFolder -and $successfulResults.Count -gt 0) {
@@ -1530,7 +1530,7 @@ function Read-PostSequenceAction {
     }
 
     Write-Console ""
-    return Read-Choice -Question "Que veux-tu faire maintenant ?" -AllowedValues @("Restart", "Close") -Labels @("Relancer une recherche", "Fermer la fenêtre")
+    return Read-Choice -Question "What do you want to do now?" -AllowedValues @("Restart", "Close") -Labels @("Run another search", "Close the window")
 }
 
 function Assert-SelfTest {
@@ -1552,7 +1552,7 @@ function Assert-SelfTestEqual {
     )
 
     if ([string]$Actual -ne [string]$Expected) {
-        throw "$Message Attendu : '$Expected'. Reçu : '$Actual'."
+        throw "$Message Expected: '$Expected'. Actual: '$Actual'."
     }
 }
 
@@ -1600,26 +1600,26 @@ function Invoke-SelfTest {
     try {
         [System.IO.Directory]::CreateDirectory($tempRoot) | Out-Null
 
-        if (-not (Invoke-SelfTestCase -Name "version et User-Agent" -ScriptBlock {
-            Assert-SelfTest -Condition ($script:ApplicationVersion -match "^\d+\.\d+\.\d+$") -Message "La version applicative doit être SemVer."
+        if (-not (Invoke-SelfTestCase -Name "version and User-Agent" -ScriptBlock {
+            Assert-SelfTest -Condition ($script:ApplicationVersion -match "^\d+\.\d+\.\d+$") -Message "The application version must be SemVer."
 
             $versionPath = Join-Path -Path (Get-ScriptBaseDirectory) -ChildPath "VERSION"
 
             if (Test-Path -LiteralPath $versionPath -PathType Leaf) {
                 $versionText = (Get-Content -LiteralPath $versionPath -Raw).Trim()
-                Assert-SelfTestEqual -Actual $script:ApplicationVersion -Expected $versionText -Message "VERSION doit correspondre au script."
+                Assert-SelfTestEqual -Actual $script:ApplicationVersion -Expected $versionText -Message "VERSION must match the script."
             }
 
             $headers = Get-HttpHeader -Accept "application/json"
-            Assert-SelfTest -Condition ([string]$headers["User-Agent"]).Contains("/$script:ApplicationVersion PowerShell/") -Message "Le User-Agent doit reprendre la version applicative."
+            Assert-SelfTest -Condition ([string]$headers["User-Agent"]).Contains("/$script:ApplicationVersion PowerShell/") -Message "The User-Agent must include the application version."
         })) { $failed++ }
 
-        if (-not (Invoke-SelfTestCase -Name "validation des paramètres" -ScriptBlock {
-            Assert-SelfTestEqual -Actual (ConvertTo-Game -Value "1") -Expected "RS3" -Message "Le choix RS3 numérique doit être accepté."
-            Assert-SelfTestEqual -Actual (ConvertTo-OutputFormat -Value "2") -Expected "Csv" -Message "Le choix CSV numérique doit être accepté."
-            Assert-SelfTestThrows -ScriptBlock { ConvertTo-Game -Value "Nope" } -Message "Un jeu invalide doit échouer."
-            Assert-SelfTestThrows -ScriptBlock { ConvertTo-OutputFormat -Value "xlsx" } -Message "Un format invalide doit échouer."
-            Assert-SelfTestThrows -ScriptBlock { ConvertTo-ClanName -Value "A" } -Message "Un nom trop court doit échouer."
+        if (-not (Invoke-SelfTestCase -Name "parameter validation" -ScriptBlock {
+            Assert-SelfTestEqual -Actual (ConvertTo-Game -Value "1") -Expected "RS3" -Message "The numeric RS3 choice must be accepted."
+            Assert-SelfTestEqual -Actual (ConvertTo-OutputFormat -Value "2") -Expected "Csv" -Message "The numeric CSV choice must be accepted."
+            Assert-SelfTestThrows -ScriptBlock { ConvertTo-Game -Value "Nope" } -Message "An invalid game must fail."
+            Assert-SelfTestThrows -ScriptBlock { ConvertTo-OutputFormat -Value "xlsx" } -Message "An invalid format must fail."
+            Assert-SelfTestThrows -ScriptBlock { ConvertTo-ClanName -Value "A" } -Message "A too-short name must fail."
         })) { $failed++ }
 
         if (-not (Invoke-SelfTestCase -Name "parsing RS3 CSV" -ScriptBlock {
@@ -1629,10 +1629,10 @@ Alice,Owner,"1,234",7
 Bob,Recruit,0,0
 "@
             $members = @(ConvertFrom-Rs3ClanMembersCsv -CsvText $csvText -ClanName "Rune Test")
-            Assert-SelfTestEqual -Actual $members.Count -Expected 2 -Message "Le fixture RS3 doit produire deux membres."
-            Assert-SelfTestEqual -Actual $members[0].Game -Expected "RS3" -Message "Le jeu RS3 doit être conservé."
-            Assert-SelfTestEqual -Actual $members[0].Pseudo -Expected "Alice" -Message "Le pseudo RS3 doit être lu."
-            Assert-SelfTestEqual -Actual $members[0].XP -Expected "1,234" -Message "L'XP RS3 citée doit être conservée."
+            Assert-SelfTestEqual -Actual $members.Count -Expected 2 -Message "The RS3 fixture must produce two members."
+            Assert-SelfTestEqual -Actual $members[0].Game -Expected "RS3" -Message "The RS3 game value must be preserved."
+            Assert-SelfTestEqual -Actual $members[0].Pseudo -Expected "Alice" -Message "The RS3 display name must be read."
+            Assert-SelfTestEqual -Actual $members[0].XP -Expected "1,234" -Message "The quoted RS3 XP value must be preserved."
         })) { $failed++ }
 
         if (-not (Invoke-SelfTestCase -Name "parsing OSRS JSON" -ScriptBlock {
@@ -1648,13 +1648,13 @@ Bob,Recruit,0,0
 "@ | ConvertFrom-Json
 
             $members = @(ConvertFrom-OsrsGroupDetails -Details $details -GroupId 257)
-            Assert-SelfTestEqual -Actual $members.Count -Expected 2 -Message "Le fixture OSRS doit produire deux membres."
-            Assert-SelfTestEqual -Actual $members[0].Game -Expected "OSRS" -Message "Le jeu OSRS doit être conservé."
-            Assert-SelfTestEqual -Actual $members[1].Pseudo -Expected "beta" -Message "Le username OSRS doit servir de fallback."
-            Assert-SelfTestEqual -Actual $members[0].Kills -Expected "" -Message "Kills doit rester vide pour OSRS."
+            Assert-SelfTestEqual -Actual $members.Count -Expected 2 -Message "The OSRS fixture must produce two members."
+            Assert-SelfTestEqual -Actual $members[0].Game -Expected "OSRS" -Message "The OSRS game value must be preserved."
+            Assert-SelfTestEqual -Actual $members[1].Pseudo -Expected "beta" -Message "The OSRS username must be used as fallback."
+            Assert-SelfTestEqual -Actual $members[0].Kills -Expected "" -Message "Kills must remain empty for OSRS."
         })) { $failed++ }
 
-        if (-not (Invoke-SelfTestCase -Name "exports et chemins spéciaux" -ScriptBlock {
+        if (-not (Invoke-SelfTestCase -Name "exports and special paths" -ScriptBlock {
             $outputDir = Join-Path -Path $tempRoot -ChildPath "exports [selftest]"
             $members = @(
                 [PSCustomObject]@{
@@ -1670,20 +1670,20 @@ Bob,Recruit,0,0
             $csvPath = Export-Member -Members $members -Game "RS3" -ClanName "Clan Test" -OutputFormat "Csv" -OutputDir $outputDir -OutputChunkSize 25 -FileTimestamp "2026-07-09_12-00-00"
             $markdownPath = Export-Member -Members $members -Game "RS3" -ClanName "Clan Test" -OutputFormat "Markdown" -OutputDir $outputDir -OutputChunkSize 25 -FileTimestamp "2026-07-09_12-00-01"
 
-            Assert-SelfTest -Condition (Test-Path -LiteralPath $csvPath -PathType Leaf) -Message "Le CSV doit être créé."
-            Assert-SelfTest -Condition (Test-Path -LiteralPath $markdownPath -PathType Leaf) -Message "Le Markdown doit être créé."
+            Assert-SelfTest -Condition (Test-Path -LiteralPath $csvPath -PathType Leaf) -Message "The CSV must be created."
+            Assert-SelfTest -Condition (Test-Path -LiteralPath $markdownPath -PathType Leaf) -Message "The Markdown must be created."
 
             $csvText = Get-Content -LiteralPath $csvPath -Raw
             $markdownText = Get-Content -LiteralPath $markdownPath -Raw
 
-            Assert-SelfTest -Condition ($csvText.Contains('"Pseudo"')) -Message "Le CSV doit contenir l'en-tête Pseudo."
-            Assert-SelfTest -Condition ($markdownText.Contains("Alice \| Bob")) -Message "Le Markdown doit échapper les pipes."
-            Assert-SelfTest -Condition (Open-OutputDirectory -Path $outputDir -ProbeOnly) -Message "Le helper d'ouverture doit accepter un dossier existant."
+            Assert-SelfTest -Condition ($csvText.Contains('"Pseudo"')) -Message "The CSV must contain the Pseudo header."
+            Assert-SelfTest -Condition ($markdownText.Contains("Alice \| Bob")) -Message "Markdown must escape pipes."
+            Assert-SelfTest -Condition (Open-OutputDirectory -Path $outputDir -ProbeOnly) -Message "The open-folder helper must accept an existing folder."
         })) { $failed++ }
 
         if (-not (Invoke-SelfTestCase -Name "classification HTTP" -ScriptBlock {
-            Assert-SelfTest -Condition (Test-IsPermanentHttpStatusCode -StatusCode 404) -Message "HTTP 404 doit être permanent."
-            Assert-SelfTest -Condition (-not (Test-IsPermanentHttpStatusCode -StatusCode 429)) -Message "HTTP 429 doit rester retryable."
+            Assert-SelfTest -Condition (Test-IsPermanentHttpStatusCode -StatusCode 404) -Message "HTTP 404 must be permanent."
+            Assert-SelfTest -Condition (-not (Test-IsPermanentHttpStatusCode -StatusCode 429)) -Message "HTTP 429 must remain retryable."
         })) { $failed++ }
     }
     finally {
@@ -1695,11 +1695,11 @@ Bob,Recruit,0,0
     }
 
     if ($failed -gt 0) {
-        Write-Fail "SelfTest terminé avec $failed échec(s)."
+        Write-Fail "SelfTest completed with $failed failure(s)."
         return $false
     }
 
-    Write-Ok "SelfTest terminé sans échec."
+    Write-Ok "SelfTest completed without failure."
     return $true
 }
 
@@ -1727,7 +1727,7 @@ $exitCode = 0
 while ($true) {
     try {
         Write-Console ""
-        Write-Console "$(Get-UiMarker -Kind "Export" -Fallback "==") Export de membres RuneScape / OSRS v$script:ApplicationVersion" -ForegroundColor White
+        Write-Console "$(Get-UiMarker -Kind "Export" -Fallback "==") RuneScape / OSRS member export v$script:ApplicationVersion" -ForegroundColor White
         Write-Console ""
 
         $options = Resolve-InteractiveOption -Game $currentGame -ClanName $currentClanName -OutputFormat $currentOutputFormat -OsrsGroupId $currentOsrsGroupId

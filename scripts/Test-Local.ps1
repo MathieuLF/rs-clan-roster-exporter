@@ -20,7 +20,7 @@ function Initialize-ValidationConsole {
         $global:OutputEncoding = $utf8NoBom
     }
     catch {
-        Write-Verbose "Impossible d'ajuster l'encodage de validation : $($_.Exception.Message)"
+        Write-Verbose "Could not adjust validation encoding: $($_.Exception.Message)"
     }
 
     if ($env:OS -eq "Windows_NT" -and -not [Console]::IsOutputRedirected) {
@@ -28,7 +28,7 @@ function Initialize-ValidationConsole {
             cmd.exe /c "chcp 65001 >nul" | Out-Null
         }
         catch {
-            Write-Verbose "Impossible de changer la page de code console : $($_.Exception.Message)"
+            Write-Verbose "Could not change the console code page: $($_.Exception.Message)"
         }
     }
 }
@@ -56,7 +56,7 @@ function Invoke-NativeCheck {
     & $CommandPath @Arguments
 
     if ($LASTEXITCODE -ne 0) {
-        throw "$Label a échoué (exit $LASTEXITCODE)."
+        throw "$Label failed (exit $LASTEXITCODE)."
     }
 }
 
@@ -112,7 +112,7 @@ exit `$LASTEXITCODE
     }
 
     if ($exitCode -ne 0) {
-        throw "$Label a échoué (exit $exitCode)."
+        throw "$Label failed (exit $exitCode)."
     }
 }
 
@@ -148,7 +148,7 @@ function Invoke-NetworkSmokeCheck {
         $exports = @(Get-ChildItem -LiteralPath $tempRoot -Filter "*.csv" -File)
 
         if ($exports.Count -lt 1) {
-            throw "Le smoke test réseau n'a généré aucun CSV dans $tempRoot."
+            throw "The network smoke test did not generate any CSV file in $tempRoot."
         }
     }
     finally {
@@ -162,11 +162,11 @@ function Invoke-ScriptAnalyzerCheck {
     $analyzer = Get-Command -Name Invoke-ScriptAnalyzer -ErrorAction SilentlyContinue
 
     if ($null -eq $analyzer) {
-        Write-Warning "PSScriptAnalyzer introuvable; analyse statique sautée."
+        Write-Warning "PSScriptAnalyzer not found; static analysis skipped."
         return
     }
 
-    Write-Host "==> PSScriptAnalyzer erreurs"
+    Write-Host "==> PSScriptAnalyzer errors"
     $issues = foreach ($path in (@($MainScript) + $ReleaseScripts)) {
         Invoke-ScriptAnalyzer -Path $path -Severity Error
     }
@@ -175,7 +175,7 @@ function Invoke-ScriptAnalyzerCheck {
 
     if ($issues.Count -gt 0) {
         $issues | Format-Table -AutoSize | Out-String | Write-Host
-        throw "PSScriptAnalyzer a trouvé $($issues.Count) erreur(s)."
+        throw "PSScriptAnalyzer found $($issues.Count) error(s)."
     }
 }
 
@@ -183,13 +183,13 @@ Initialize-ValidationConsole
 Set-Location -LiteralPath $Root
 
 if (-not (Test-Path -LiteralPath $MainScript -PathType Leaf)) {
-    throw "Script principal introuvable : $MainScript"
+    throw "Main script not found: $MainScript"
 }
 
 $pwsh = Get-CommandSource -Name "pwsh"
 
 if ([string]::IsNullOrWhiteSpace($pwsh)) {
-    Write-Warning "pwsh introuvable; validation PowerShell 7 sautée."
+    Write-Warning "pwsh not found; PowerShell 7 validation skipped."
 } else {
     Invoke-NativeCheck -Label "PowerShell 7 - Version" -CommandPath $pwsh -Arguments @("-NoProfile", "-File", $MainScript, "-Version")
     Invoke-NativeCheck -Label "PowerShell 7 - SelfTest" -CommandPath $pwsh -Arguments @("-NoProfile", "-File", $MainScript, "-SelfTest")
@@ -199,7 +199,7 @@ if ($env:OS -eq "Windows_NT") {
     $windowsPowerShell = Get-CommandSource -Name "powershell.exe"
 
     if ([string]::IsNullOrWhiteSpace($windowsPowerShell)) {
-        Write-Warning "powershell.exe introuvable; validation Windows PowerShell 5.1 sautée."
+        Write-Warning "powershell.exe not found; Windows PowerShell 5.1 validation skipped."
     } else {
         Invoke-WindowsPowerShellUtf8ScriptCheck -Label "Windows PowerShell - Version" -CommandPath $windowsPowerShell -ScriptPath $MainScript -ScriptArguments @("-Version")
         Invoke-WindowsPowerShellUtf8ScriptCheck -Label "Windows PowerShell - SelfTest" -CommandPath $windowsPowerShell -ScriptPath $MainScript -ScriptArguments @("-SelfTest")
@@ -210,10 +210,10 @@ Invoke-ScriptAnalyzerCheck
 
 if ($NetworkSmoke) {
     if ([string]::IsNullOrWhiteSpace($pwsh)) {
-        throw "-NetworkSmoke demande pwsh pour garder le smoke test cohérent avec Linux/macOS."
+        throw "-NetworkSmoke requires pwsh to keep the smoke test consistent with Linux/macOS."
     }
 
     Invoke-NetworkSmokeCheck -CommandPath $pwsh
 }
 
-Write-Host "Validation locale terminée."
+Write-Host "Local validation complete."
