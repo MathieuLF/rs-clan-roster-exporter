@@ -56,10 +56,7 @@ html {
 
 body {
   margin: 0;
-  background:
-    linear-gradient(135deg, rgba(22, 122, 99, 0.08), rgba(180, 118, 34, 0.08) 42%, rgba(40, 88, 200, 0.08)),
-    repeating-linear-gradient(90deg, rgba(23, 32, 42, 0.035) 0 1px, transparent 1px 72px),
-    var(--bg);
+  background: var(--bg);
   color: var(--ink);
   font-family: "Aptos Display", "Trebuchet MS", "Segoe UI", sans-serif;
   line-height: 1.55;
@@ -95,11 +92,7 @@ pre {
   gap: 20px;
   min-height: 72px;
   padding: 14px 48px;
-  background:
-    radial-gradient(circle at 9% -28px, rgba(22, 122, 99, 0.12) 0 56px, transparent 58px),
-    radial-gradient(circle at 92% 96px, rgba(180, 118, 34, 0.1) 0 64px, transparent 66px),
-    repeating-linear-gradient(90deg, rgba(23, 32, 42, 0.035) 0 1px, transparent 1px 84px),
-    rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid var(--line);
   border-top: 4px solid var(--green);
   box-shadow: 0 10px 26px rgba(23, 32, 42, 0.07);
@@ -161,31 +154,22 @@ nav a:focus {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  min-height: 520px;
-  height: 72svh;
-  max-height: 720px;
-  padding: 54px 48px;
-  background:
-    linear-gradient(95deg, rgba(8, 20, 24, 0.94), rgba(17, 84, 77, 0.78) 45%, rgba(158, 94, 34, 0.38)),
-    url("hero-roster-preview.png") center / cover no-repeat;
-  color: #ffffff;
+  min-height: 0;
+  padding: 86px 48px 76px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  text-align: center;
 }
 
 .hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(5, 12, 16, 0.22), transparent 36%, rgba(5, 12, 16, 0.14)),
-    linear-gradient(180deg, transparent 58%, rgba(5, 12, 16, 0.58));
+  content: none;
 }
 
 .hero-content {
   position: relative;
   z-index: 1;
-  width: min(1080px, 100%);
+  width: min(760px, 100%);
 }
 
 .tag {
@@ -213,7 +197,7 @@ p {
 }
 
 h1 {
-  max-width: 650px;
+  max-width: 760px;
   margin-bottom: 18px;
   font-size: 3.5rem;
   line-height: 1.02;
@@ -234,15 +218,18 @@ h3 {
 }
 
 .lede {
-  max-width: 620px;
+  max-width: 660px;
+  margin-right: auto;
   margin-bottom: 0;
-  color: rgba(255, 255, 255, 0.88);
+  margin-left: auto;
+  color: var(--muted);
   font-size: 1.22rem;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
   margin-top: 28px;
 }
@@ -397,29 +384,30 @@ h3 {
 
 .release-strip {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(240px, 0.85fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
   align-items: center;
-  padding: 18px max(48px, calc((100% - 1080px) / 2));
-  background:
-    linear-gradient(135deg, #ffffff, #f2fbf7 52%, #fff8e8);
+  padding: 10px max(48px, calc((100% - 1080px) / 2));
+  background: #fbfdfc;
   border-bottom: 1px solid var(--line);
 }
 
 .release-strip h2 {
-  margin-bottom: 6px;
-  font-size: 1.18rem;
+  margin-bottom: 2px;
+  font-size: 1rem;
 }
 
 .release-strip p {
   margin-bottom: 0;
   color: var(--muted);
-  font-size: 0.94rem;
+  font-size: 0.82rem;
 }
 
 .release-strip dl {
-  display: grid;
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px 18px;
   margin: 0;
 }
 
@@ -438,7 +426,7 @@ h3 {
 .release-strip dd {
   margin: 0;
   overflow-wrap: anywhere;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -527,10 +515,10 @@ article .button {
 .product-shot img {
   display: block;
   width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #0f1720;
-  box-shadow: var(--shadow);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .product-shot figcaption {
@@ -586,9 +574,8 @@ td:first-child {
   min-width: 0;
   padding: 22px;
   border-radius: 8px;
-  background:
-    linear-gradient(135deg, #101922, #142f35 58%, #2b2217);
-  box-shadow: var(--shadow);
+  background: #0b1c22;
+  box-shadow: none;
 }
 
 .code-panel pre {
@@ -680,8 +667,8 @@ footer a {
 
   .hero {
     height: auto;
-    min-height: 500px;
-    padding: 54px 22px;
+    min-height: 0;
+    padding: 62px 22px 56px;
   }
 
   h1 {
@@ -700,8 +687,12 @@ footer a {
   }
 
   .release-strip {
-    gap: 12px;
-    padding: 18px 22px;
+    gap: 8px;
+    padding: 10px 22px;
+  }
+
+  .release-strip dl {
+    justify-content: flex-start;
   }
 }
 
