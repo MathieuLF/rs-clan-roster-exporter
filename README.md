@@ -4,250 +4,250 @@
 ![Output Markdown or CSV](https://img.shields.io/badge/Output-Markdown%20%7C%20CSV-2ea44f)
 ![License MIT](https://img.shields.io/badge/License-MIT-blue)
 [![Release](https://img.shields.io/github/v/release/MathieuLF/rs-clan-roster-exporter?label=Release)](https://github.com/MathieuLF/rs-clan-roster-exporter/releases)
-[![Site GitHub Pages](https://img.shields.io/badge/Site-GitHub%20Pages-167a63)](https://mathieulf.github.io/rs-clan-roster-exporter/)
+[![GitHub Pages](https://img.shields.io/badge/Site-GitHub%20Pages-167a63)](https://mathieulf.github.io/rs-clan-roster-exporter/)
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa)](https://github.com/sponsors/MathieuLF)
 
-Exportateur PowerShell local pour récupérer les membres d'un clan RuneScape 3 ou d'un groupe OSRS, puis générer un fichier Markdown ou CSV.
+Local PowerShell exporter for RuneScape 3 clan members and OSRS group members. It fetches public roster data and writes Markdown or CSV files that are ready to archive, review, or share.
 
-Tout se lance depuis `Get-RunescapeClanMembers.ps1`, en mode interactif ou avec paramètres.
+Everything runs through `Get-RunescapeClanMembers.ps1`, either interactively or with PowerShell parameters.
 
-Site de présentation : [mathieulf.github.io/rs-clan-roster-exporter](https://mathieulf.github.io/rs-clan-roster-exporter/).
+Project site: [mathieulf.github.io/rs-clan-roster-exporter](https://mathieulf.github.io/rs-clan-roster-exporter/).
 
-Versions officielles : [GitHub Releases](https://github.com/MathieuLF/rs-clan-roster-exporter/releases).
+Official versions: [GitHub Releases](https://github.com/MathieuLF/rs-clan-roster-exporter/releases).
 
-## Points clés
+## Highlights
 
-- Export RS3 via l'endpoint public Jagex Clan Members Lite.
-- Export OSRS via l'API publique Wise Old Man.
-- Mode interactif simple avec des choix de menu par chiffre : RS3, OSRS ou les deux.
-- Mode automatisable avec paramètres PowerShell.
-- Compatible Windows PowerShell 5.1 sur Windows et PowerShell 7+ sur Windows, Linux et macOS.
-- Sorties Markdown et CSV en UTF-8 avec BOM, pratiques pour Excel, GitHub et PowerShell.
-- Dossier `output` créé à côté du script, peu importe le dossier courant de PowerShell.
-- Aperçu console, progression, retries réseau et sauvegarde locale de récupération.
-- Fin de séquence claire : relancer une recherche ou fermer la fenêtre.
+- RS3 export through the public Jagex Clan Members Lite endpoint.
+- OSRS export through the public Wise Old Man API.
+- Simple interactive menu with numbered choices: RS3, OSRS, or both.
+- Automation-friendly PowerShell parameters.
+- Compatible with Windows PowerShell 5.1 on Windows and PowerShell 7+ on Windows, Linux, and macOS.
+- Markdown and CSV outputs in UTF-8 with BOM, suitable for Excel, GitHub, and PowerShell.
+- `output` folder created next to the script, regardless of the current PowerShell working directory.
+- Console preview, progress display, network retries, and local recovery files.
+- Clear end flow: run another lookup or close the window.
 
-## Prérequis
+## Requirements
 
-- Windows PowerShell 5.1 ou PowerShell 7+ sur Windows.
-- PowerShell 7+ sur Linux ou macOS.
-- Accès Internet pour joindre les endpoints publics RS3 ou Wise Old Man.
-- Un terminal PowerShell. Les exemples ci-dessous supposent que tu es dans le dossier du projet.
+- Windows PowerShell 5.1 or PowerShell 7+ on Windows.
+- PowerShell 7+ on Linux or macOS.
+- Internet access to reach the public RS3 or Wise Old Man endpoints.
+- A PowerShell terminal. The examples below assume you are in the project folder.
 
-## Démarrage rapide
+## Quick Start
 
-Depuis le dossier du script :
+From the script folder:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1
 ```
 
-Sur Linux ou macOS avec PowerShell 7+ :
+On Linux or macOS with PowerShell 7+:
 
 ```powershell
 pwsh ./Get-RunescapeClanMembers.ps1
 ```
 
-Afficher la version du script :
+Show the script version:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1 -Version
 ```
 
-Le mode interactif pose trois questions :
+Interactive mode asks three questions:
 
-1. Jeu cible : `1` pour RS3, `2` pour OSRS, `3` pour RS3 + OSRS
-2. Nom du clan ou du groupe
-3. Format de sortie : `1` pour Markdown, `2` pour CSV
+1. Target game: `1` for RS3, `2` for OSRS, `3` for RS3 + OSRS
+2. Clan or group name
+3. Output format: `1` for Markdown, `2` for CSV
 
-À la fin, le script affiche le chemin complet du ou des fichiers générés et un lien local `file:///...` lorsque le terminal peut le rendre cliquable. Il demande ensuite si tu veux relancer une recherche ou fermer la fenêtre.
+At the end, the script prints the full path of every generated file and a local `file:///...` link when the terminal can render it as clickable. It then asks whether to run another lookup or close the window.
 
-## Exemples
+## Examples
 
-Exporter un clan RS3 en CSV :
+Export an RS3 clan to CSV:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1 -Game RS3 -ClanName "Wapitiklan Empire" -OutputFormat Csv
 ```
 
-Exporter un clan RS3 en Markdown :
+Export an RS3 clan to Markdown:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1 -Game RS3 -ClanName "Wapitiklan Empire" -OutputFormat Markdown
 ```
 
-Exporter un groupe OSRS par son nom, par exemple KnightSlayer :
+Export an OSRS group by name, for example KnightSlayer:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1 -Game OSRS -ClanName "KnightSlayer" -OutputFormat Csv
 ```
 
-Rechercher le même nom dans RS3 et OSRS :
+Search the same name in RS3 and OSRS:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1 -Game Both -ClanName "KnightSlayer" -OutputFormat Markdown
 ```
 
-Exporter un groupe OSRS par identifiant Wise Old Man :
+Export an OSRS group by Wise Old Man ID:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1 -Game OSRS -OsrsGroupId 257 -OutputFormat Csv
 ```
 
-Utiliser des retries plus patients si le service distant répond lentement :
+Use more patient retries when a remote service is slow:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1 -Game RS3 -ClanName "Wapitiklan Empire" -OutputFormat Csv -TimeoutSec 120 -MaxRetries 6 -RetryBaseDelaySec 15 -MaxRetryDelaySec 180
 ```
 
-## Dossier de sortie
+## Output Folder
 
-Par défaut, les exports sont écrits dans :
+By default, exports are written to:
 
 ```text
-<dossier-du-script>\output
+<script-folder>\output
 ```
 
-Le chemin de sortie relatif est toujours résolu depuis le dossier du script, pas depuis le dossier courant de PowerShell. Donc même si le script est lancé depuis ailleurs, `.\output` reste à côté de `Get-RunescapeClanMembers.ps1`.
+Relative output paths are always resolved from the script folder, not from the current PowerShell working directory. Even when the script is launched from somewhere else, `.\output` stays next to `Get-RunescapeClanMembers.ps1`.
 
-Changer le dossier de sortie :
+Change the output folder:
 
 ```powershell
 .\Get-RunescapeClanMembers.ps1 -Game RS3 -ClanName "Wapitiklan Empire" -OutputFormat Csv -OutputDir ".\exports"
 ```
 
-Dans cet exemple, `.\exports` sera lui aussi créé à côté du script. Un chemin absolu, lui, sera utilisé tel quel.
+In this example, `.\exports` is also created next to the script. Absolute paths are used as provided.
 
-## Fichiers générés
+## Generated Files
 
-Le nom du fichier dépend du jeu, du clan ou groupe, du format choisi et d'un horodatage complet :
+The file name includes the game, clan or group, selected format, and a full timestamp:
 
 ```text
-rs3-nom-du-clan-members-2026-06-24_13-05-42.csv
-rs3-nom-du-clan-members-2026-06-24_13-05-42.md
-osrs-nom-du-groupe-members-2026-06-24_13-05-42.csv
-osrs-nom-du-groupe-members-2026-06-24_13-05-42.md
+rs3-clan-name-members-2026-06-24_13-05-42.csv
+rs3-clan-name-members-2026-06-24_13-05-42.md
+osrs-group-name-members-2026-06-24_13-05-42.csv
+osrs-group-name-members-2026-06-24_13-05-42.md
 ```
 
-Le format d'horodatage est `yyyy-MM-dd_HH-mm-ss`, en heure locale. Les fichiers de récupération utilisent le même horodatage que l'export correspondant.
+The timestamp format is `yyyy-MM-dd_HH-mm-ss` in local time. Recovery files use the same timestamp as the matching export.
 
-Colonnes principales :
+Main columns:
 
-| Colonne | Description |
+| Column | Description |
 | --- | --- |
-| `Game` | `RS3` ou `OSRS` |
-| `Clan` | Nom du clan ou du groupe exporté |
-| `Pseudo` | Nom du membre |
-| `Rang` | Rang retourné par la source |
-| `XP` | XP retournée par la source |
-| `Kills` | Valeur RS3 lorsque disponible |
+| `Game` | `RS3` or `OSRS` |
+| `Clan` | Exported clan or group name |
+| `Pseudo` | Member display name |
+| `Rang` | Rank returned by the source |
+| `XP` | XP returned by the source |
+| `Kills` | RS3 value when available |
 
-Pour OSRS, `Kills` reste vide parce que Wise Old Man ne fournit pas cette information dans la liste des membres du groupe.
+For OSRS, `Kills` stays empty because Wise Old Man does not provide that value in the group member list.
 
-## Paramètres utiles
+## Useful Parameters
 
-| Paramètre | Utilité |
+| Parameter | Purpose |
 | --- | --- |
-| `-Game RS3`, `-Game OSRS` ou `-Game Both` | Choisit la source à exporter |
-| `-ClanName "Nom"` | Recherche un clan ou groupe par nom |
-| `-OsrsGroupId 257` | Cible directement un groupe Wise Old Man |
-| `-OutputFormat Markdown` ou `-OutputFormat Csv` | Choisit le format généré |
-| `-OutputDir ".\output"` | Définit le dossier de sortie |
-| `-PreviewCount 50` | Contrôle le nombre de membres affichés en aperçu |
-| `-ShowAllInConsole` | Affiche tous les membres dans la console |
-| `-OpenFolder` | Ouvre le dossier de sortie à la fin |
-| `-TimeoutSec 120` | Augmente le délai maximal d'un appel réseau |
-| `-MaxRetries 6` | Augmente le nombre de tentatives |
-| `-RequestDelaySec 2` | Définit le délai minimal entre deux appels HTTP |
-| `-KeepRecoveryFile` | Conserve le fichier local de récupération |
-| `-RepositoryUrl "https://github.com/..."` | Ajoute l'URL du dépôt au User-Agent |
-| `-SelfTest` | Lance les tests internes locaux sans appel réseau |
+| `-Game RS3`, `-Game OSRS`, or `-Game Both` | Selects the source to export |
+| `-ClanName "Name"` | Searches a clan or group by name |
+| `-OsrsGroupId 257` | Targets a Wise Old Man group directly |
+| `-OutputFormat Markdown` or `-OutputFormat Csv` | Selects the generated format |
+| `-OutputDir ".\output"` | Sets the output folder |
+| `-PreviewCount 50` | Controls how many members are shown in the console preview |
+| `-ShowAllInConsole` | Shows all members in the console |
+| `-OpenFolder` | Opens the output folder at the end |
+| `-TimeoutSec 120` | Increases the maximum duration of a network call |
+| `-MaxRetries 6` | Increases the retry count |
+| `-RequestDelaySec 2` | Sets the minimum delay between HTTP calls |
+| `-KeepRecoveryFile` | Keeps the local recovery file |
+| `-RepositoryUrl "https://github.com/..."` | Adds the repository URL to the User-Agent |
+| `-SelfTest` | Runs local internal tests without network calls |
 
-## Résultats partiels et erreurs
+## Partial Results And Errors
 
-Si tu demandes RS3 + OSRS et que le clan est trouvé seulement d'un côté, le fichier trouvé est généré et l'autre source est indiquée comme non exportée. Si rien n'est trouvé, aucun fichier n'est généré et le résumé l'indique clairement.
+If you request RS3 + OSRS and the clan is found only on one side, the matching file is generated and the other source is reported as not exported. If nothing is found, no file is generated and the summary states that clearly.
 
-Si la recherche des membres a déjà réussi avant une erreur de génération, un fichier `*.recovery.json` peut être conservé pour éviter de perdre les données récupérées.
+If member retrieval already succeeded before an export generation error, a `*.recovery.json` file can be kept to avoid losing the fetched data.
 
-Les fichiers finaux sont écrits de façon atomique : un fichier complet remplace l'ancien seulement lorsque la génération est terminée. Un fichier temporaire `.tmp-*` peut rester si l'exécution est interrompue au mauvais moment.
+Final files are written atomically: a complete file replaces the old one only after generation finishes. A temporary `.tmp-*` file can remain if execution is interrupted at the wrong moment.
 
-## PowerShell bloque le script
+## PowerShell Blocks The Script
 
-Selon la configuration Windows, PowerShell peut refuser l'exécution d'un script local. Dans ce cas, utilise :
+Depending on the Windows configuration, PowerShell may refuse to run a local script. In that case, use:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Get-RunescapeClanMembers.ps1
 ```
 
-Cette commande lance le script pour cette exécution seulement.
+This command changes the execution policy only for that run.
 
-## Sécurité et respect des services
+## Security And Service Use
 
-- Sources publiques seulement : Jagex Clan Members Lite pour RS3, Wise Old Man pour OSRS.
-- Aucun compte RuneScape requis.
-- User-Agent explicite.
-- HTTPS par défaut pour RS3.
-- Fallback HTTP RS3 disponible uniquement avec `-AllowInsecureFallback`.
-- Appels réseau séquentiels, avec backoff progressif et respect de `Retry-After`.
-- Exports générés (`output/`, `exports/`, fichiers de récupération et temporaires) ignorés par Git.
+- Public sources only: Jagex Clan Members Lite for RS3 and Wise Old Man for OSRS.
+- No RuneScape account required.
+- Explicit User-Agent.
+- HTTPS by default for RS3.
+- RS3 HTTP fallback available only with `-AllowInsecureFallback`.
+- Sequential network calls with progressive backoff and `Retry-After` support.
+- Generated exports (`output/`, `exports/`, recovery files, and temporary files) ignored by Git.
 
 ## Notes
 
-- RS3 dépend de la disponibilité de l'endpoint public Jagex.
-- OSRS dépend de Wise Old Man; le groupe doit exister publiquement sur Wise Old Man.
-- Si plusieurs groupes OSRS correspondent à une recherche, le script demande de choisir avec un chiffre.
-- En mode RS3 + OSRS, chaque source est traitée séparément : un échec OSRS ne bloque pas l'export RS3, et inversement.
-- Les paramètres textuels restent disponibles pour l'automatisation, même si le mode interactif privilégie les chiffres.
-- Le lien `file:///...` est une aide pratique; son côté cliquable dépend du terminal utilisé.
-- `-OpenFolder` tente d'ouvrir le dossier de sortie avec l'association locale du système. Si l'environnement ne le permet pas, le chemin reste affiché et l'export n'échoue pas.
+- RS3 depends on the availability of the public Jagex endpoint.
+- OSRS depends on Wise Old Man; the group must exist publicly on Wise Old Man.
+- If several OSRS groups match a search, the script asks you to select one by number.
+- In RS3 + OSRS mode, each source is handled separately: an OSRS failure does not block the RS3 export, and the reverse is also true.
+- Text parameters remain available for automation, even though interactive mode favors numbered choices.
+- The `file:///...` link is a convenience; whether it is clickable depends on the terminal.
+- `-OpenFolder` tries to open the output folder through the local system association. If the environment cannot do that, the path remains visible and the export does not fail.
 
-## Validation locale
+## Local Validation
 
-Lancer les garde-fous locaux sans contacter Jagex ni Wise Old Man :
+Run the local safeguards without contacting Jagex or Wise Old Man:
 
 ```powershell
 pwsh -NoProfile -File .\Get-RunescapeClanMembers.ps1 -SelfTest
 ```
 
-Depuis le dépôt, la commande complète vérifie aussi les hôtes PowerShell disponibles et l'analyse statique si `PSScriptAnalyzer` est installé :
+From the repository, the full local command also checks the available PowerShell hosts and runs static analysis when `PSScriptAnalyzer` is installed:
 
 ```powershell
 pwsh -NoProfile -File .\scripts\Test-Local.ps1
 ```
 
-Ajouter un smoke test réseau réel OSRS, en plus des validations locales :
+Add a real OSRS network smoke test on top of the local validations:
 
 ```powershell
 pwsh -NoProfile -File .\scripts\Test-Local.ps1 -NetworkSmoke
 ```
 
-La validation standard reste volontairement sans appel réseau. Pour une sortie console entièrement textuelle, définis `RS_CLAN_PLAIN_UI=1` avant de lancer le script.
+The standard validation command intentionally makes no network calls. For plain text console output, set `RS_CLAN_PLAIN_UI=1` before running the script.
 
-## Mise en ligne officielle
+## Official Release
 
-Le dépôt utilise une version SemVer dans `VERSION`, un `CHANGELOG.md` et des assets de release générés localement.
+The repository uses a SemVer value in `VERSION`, a `CHANGELOG.md`, and locally generated release assets.
 
-Préparer les fichiers de release :
+Prepare the release files:
 
 ```powershell
 .\scripts\Test-Local.ps1
-.\scripts\Build-Release.ps1 -Version 0.1.0 -Clean
+.\scripts\Build-Release.ps1 -Version 0.2.0 -Clean
 ```
 
-Publier une mise en ligne officielle depuis `main` :
+Publish an official release from `main`:
 
 ```powershell
-.\scripts\Publish-Release.ps1 -Version 0.1.0
+.\scripts\Publish-Release.ps1 -Version 0.2.0
 ```
 
-La publication crée un tag `vX.Y.Z`, pousse le tag, joint le script versionné, le ZIP portable, les empreintes SHA256, le manifeste JSON et les notes de mise en ligne. Le microsite lit ensuite GitHub Releases pour mettre à jour son encart de téléchargement.
+Publishing creates a `vX.Y.Z` tag, pushes the tag, and attaches the versioned script, portable ZIP, SHA256 checksums, JSON manifest, and release notes. The microsite then reads GitHub Releases to update its download card.
 
-## Licence
+## License
 
-Ce projet est publié sous licence MIT. Voir [LICENSE](LICENSE).
+This project is released under the MIT License. See [LICENSE](LICENSE).
 
-Projet non officiel, sans affiliation avec Jagex, RuneScape ou Wise Old Man.
+Unofficial project, not affiliated with Jagex, RuneScape, or Wise Old Man.
 
-## Soutenir
+## Support
 
-Si ce projet t'est utile, tu peux soutenir son développement via [GitHub Sponsors](https://github.com/sponsors/MathieuLF).
+If this project is useful to you, you can support development through [GitHub Sponsors](https://github.com/sponsors/MathieuLF).

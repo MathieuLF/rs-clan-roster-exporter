@@ -1,24 +1,27 @@
-# Journal des changements
+# Changelog
 
-Toutes les versions officielles publiées sur GitHub doivent reprendre la section de version correspondante.
+Every official GitHub release must reuse the matching version section.
 
-## [Non publié]
+## [Unreleased]
 
-- Ajout de `-SelfTest` et de `scripts/Test-Local.ps1` pour valider localement le parsing, les exports, les chemins spéciaux et les garde-fous HTTP sans appel réseau.
-- Amélioration de l'interopérabilité Windows/Linux/macOS avec shebang `pwsh`, ouverture de dossier best-effort et chemins de sortie durcis.
-- Cohérence du User-Agent avec la version applicative et arrêt plus rapide sur les erreurs HTTP permanentes.
-- La publication officielle lance maintenant la validation locale avant de créer les assets, le tag et la release.
-- Ajout d'un mode `-NetworkSmoke` à `scripts/Test-Local.ps1` pour valider un export OSRS réel à la demande.
-- Interface console et microsite plus vivants : symboles colorés en PowerShell 7, palette enrichie, boutons illustrés et animations légères.
+## [0.2.0] - 2026-07-09
+
+- Added `-SelfTest` and `scripts/Test-Local.ps1` to validate parsing, exports, special-character paths, and HTTP safeguards locally without network calls.
+- Improved Windows/Linux/macOS interoperability with a `pwsh` shebang, best-effort folder opening, and hardened output paths.
+- Aligned the User-Agent with the application version and fail faster on permanent HTTP errors.
+- Official publishing now runs local validation before creating assets, the tag, and the GitHub release.
+- Added `-NetworkSmoke` to `scripts/Test-Local.ps1` for an optional real OSRS export validation.
+- Refreshed the console UI and microsite with richer styling, PowerShell 7 color markers, illustrated buttons, and light animations.
+- Converted public documentation and the microsite to English-only content.
 
 ## [0.1.0] - 2026-06-24
 
-- Première mise en ligne officielle de RuneScape Clan Roster Exporter.
-- Export RS3 via l'endpoint public Jagex Clan Members Lite.
-- Export OSRS via l'API publique Wise Old Man.
-- Mode interactif avec choix par chiffres et mode automatisable par paramètres PowerShell.
-- Sorties Markdown et CSV en UTF-8 avec BOM.
-- Dossier de sortie résolu à côté du script, avec écriture atomique et fichier de récupération temporaire.
-- Retries réseau, backoff progressif et respect de `Retry-After`.
-- Microsite GitHub Pages avec encart dynamique alimenté par GitHub Releases.
-- Version SemVer, journal des changements, packaging ZIP, script versionné, checksums SHA256 et manifeste de release.
+- First official release of RuneScape Clan Roster Exporter.
+- RS3 export through the public Jagex Clan Members Lite endpoint.
+- OSRS export through the public Wise Old Man API.
+- Interactive mode with numbered choices and automation-friendly PowerShell parameters.
+- Markdown and CSV outputs in UTF-8 with BOM.
+- Output folder resolved next to the script, with atomic writes and temporary recovery files.
+- Network retries, progressive backoff, and `Retry-After` support.
+- GitHub Pages microsite with a dynamic card powered by GitHub Releases.
+- SemVer versioning, changelog, ZIP packaging, versioned script, SHA256 checksums, and release manifest.
