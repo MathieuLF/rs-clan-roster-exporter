@@ -3,23 +3,23 @@ changelog:
     labels:
       - ignore-for-release
   categories:
-    - title: Changements importants
+    - title: Breaking changes
       labels:
         - breaking
         - security
-    - title: Ajouts
+    - title: Additions
       labels:
         - enhancement
         - feature
-    - title: Corrections
+    - title: Fixes
       labels:
         - bug
         - fix
-    - title: Documentation et distribution
+    - title: Documentation and distribution
       labels:
         - documentation
         - release
         - packaging
-    - title: Autres changements
+    - title: Other changes
       labels:
         - "*"
