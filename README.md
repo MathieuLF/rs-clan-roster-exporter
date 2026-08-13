@@ -4,14 +4,14 @@
 ![Output Markdown or CSV](https://img.shields.io/badge/Output-Markdown%20%7C%20CSV-2ea44f)
 ![License MIT](https://img.shields.io/badge/License-MIT-blue)
 [![Release](https://img.shields.io/github/v/release/MathieuLF/rs-clan-roster-exporter?label=Release)](https://github.com/MathieuLF/rs-clan-roster-exporter/releases)
-[![GitHub Pages](https://img.shields.io/badge/Site-GitHub%20Pages-167a63)](https://mathieulf.github.io/rs-clan-roster-exporter/)
+[![Project site](https://img.shields.io/badge/Site-roster.nethercore.dev-167a63)](https://roster.nethercore.dev/)
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa)](https://github.com/sponsors/MathieuLF)
 
 Local PowerShell exporter for RuneScape 3 clan members and OSRS group members. It fetches public roster data and writes Markdown or CSV files that are ready to archive, review, or share.
 
 Everything runs through `Get-RunescapeClanMembers.ps1`, either interactively or with PowerShell parameters.
 
-Project site: [mathieulf.github.io/rs-clan-roster-exporter](https://mathieulf.github.io/rs-clan-roster-exporter/).
+Project site: [roster.nethercore.dev](https://roster.nethercore.dev/).
 
 Official versions: [GitHub Releases](https://github.com/MathieuLF/rs-clan-roster-exporter/releases).
 
