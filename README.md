@@ -4,16 +4,19 @@
 ![Output Markdown or CSV](https://img.shields.io/badge/Output-Markdown%20%7C%20CSV-2ea44f)
 ![License MIT](https://img.shields.io/badge/License-MIT-blue)
 [![Release](https://img.shields.io/github/v/release/MathieuLF/rs-clan-roster-exporter?label=Release)](https://github.com/MathieuLF/rs-clan-roster-exporter/releases)
-[![Project site](https://img.shields.io/badge/Site-roster.nethercore.dev-167a63)](https://roster.nethercore.dev/)
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa)](https://github.com/sponsors/MathieuLF)
 
 Local PowerShell exporter for RuneScape 3 clan members and OSRS group members. It fetches public roster data and writes Markdown or CSV files that are ready to archive, review, or share.
 
 Everything runs through `Get-RunescapeClanMembers.ps1`, either interactively or with PowerShell parameters.
 
-Project site: [roster.nethercore.dev](https://roster.nethercore.dev/).
-
 Official versions: [GitHub Releases](https://github.com/MathieuLF/rs-clan-roster-exporter/releases).
+
+This public repository documents the local exporter and its GitHub releases. It does not describe or assert the status of any separately hosted service.
+
+## Lifecycle
+
+The exporter is a local, release-based utility. A GitHub release identifies a downloadable version; it does not imply that Jagex, Wise Old Man or a separately hosted presentation is available.
 
 ## Highlights
 
@@ -240,7 +243,7 @@ Publish an official release from `main`:
 .\scripts\Publish-Release.ps1 -Version 0.2.0
 ```
 
-Publishing creates a `vX.Y.Z` tag, pushes the tag, and attaches the versioned script, portable ZIP, SHA256 checksums, JSON manifest, and release notes. The microsite then reads GitHub Releases to update its download card.
+Publishing creates a `vX.Y.Z` tag, pushes the tag, and attaches the versioned script, portable ZIP, SHA256 checksums, JSON manifest, and release notes.
 
 ## License
 
