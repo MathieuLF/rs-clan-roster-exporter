@@ -165,6 +165,7 @@ For OSRS, `Kills` stays empty because Wise Old Man does not provide that value i
 | `-KeepRecoveryFile` | Keeps the local recovery file |
 | `-RepositoryUrl "https://github.com/..."` | Adds the repository URL to the User-Agent |
 | `-SelfTest` | Runs local internal tests without network calls |
+| `-NonInteractive` | Disables prompts and fails when required parameters are missing |
 
 ## Partial Results And Errors
 
@@ -205,6 +206,99 @@ This command changes the execution policy only for that run.
 - `-OpenFolder` tries to open the output folder through the local system association. If the environment cannot do that, the path remains visible and the export does not fail.
 
 ## Local Validation
+
+Contributor commands require a Git clone. The portable ZIP contains the
+standalone exporter and documentation; its `-SelfTest` works without contributor tools.
+
+### Reproducible setup and architecture
+
+The root script handles input, HTTP/retries, parsing, recovery and exports.
+`scripts/` contains contributor tooling; `tests/` contains synthetic fixtures.
+`docs/` is a static site with a client-side GitHub release card. There is no
+database, migration, application package manager, local service or required secret.
+
+On Ubuntu 24.04 x86_64, with Git, Python 3, curl, tar, xz, CA certificates and the
+standard PowerShell runtime libraries (including ICU, OpenSSL and zlib):
+
+```bash
+bash scripts/setup-cloud.sh
+export PATH="$HOME/.local/bin:$PATH"
+pwsh -NoProfile -File scripts/Test-Local.ps1 -Profile Dev
+```
+
+Setup installs PowerShell 7.6.5 and Node.js 22.22.0 outside the checkout,
+verifies pinned SHA256 archive hashes and installs PSScriptAnalyzer 1.25.0.
+Versions are in `scripts/toolchain.json`; rerun setup when they change.
+Setup is noninteractive and safe to repeat. HTTPS access to GitHub release
+assets, nodejs.org and PowerShell Gallery is required. TLS verification stays
+enabled; provision a corporate proxy CA in the OS trust store if needed.
+
+On Windows, install PowerShell 7 and Node.js (the pinned versions are recommended),
+then run `pwsh -NoProfile -File scripts/Setup-Tools.ps1`.
+
+### Validation profiles
+
+| Profile | Command | Scope |
+| --- | --- | --- |
+| Daily | `pwsh -NoProfile -File scripts/Test-Local.ps1 -Profile Dev` | Internal tests, PowerShell parsing, pinned analyzer, offline exporter integrations, JS syntax and simulated site/release states |
+| Full offline | `pwsh -NoProfile -File scripts/Test-Local.ps1 -Profile Full` | Dev plus isolated packaging, archive contents, checksums, manifest and packaged exporter tests |
+| Live OSRS | `pwsh -NoProfile -File scripts/Test-Local.ps1 -Profile Dev -NetworkSmoke` | Dev plus a real group 257 export in a temporary directory |
+
+The original command without a profile runs Full. Windows also tests the real
+file under PowerShell 5.1 when available. CI runs Full on Ubuntu and Windows
+without publishing. Checks reuse installed tools and preserve tracked files.
+Missing PowerShell, Node or the exact analyzer fails validation. Analyzer Error
+severity is enforced; this is not a full style or formatting policy.
+
+Dev excludes packaging, live APIs and browser rendering. Full is offline and
+does not certify live services, browser rendering, signatures or production.
+Add integrations matching the changed behavior and browser checks for UI changes.
+A daily check is not release certification.
+
+### Automation and site preview
+
+```bash
+pwsh -NoProfile -File Get-RunescapeClanMembers.ps1 -NonInteractive -Game OSRS -OsrsGroupId 257 -OutputFormat Csv
+python3 -m http.server 8000 --bind 127.0.0.1 --directory docs
+```
+
+The explicit script switch `-NonInteractive` disables all prompts; supply the
+required parameters. OSRS IDs avoid ambiguous searches. The preview serves
+`http://127.0.0.1:8000/`; Ctrl+C stops it. The CLI has no health endpoint:
+`-Version`/`-SelfTest` verify it offline and `-NetworkSmoke` verifies a real export.
+RS3 needs `secure.runescape.com`; OSRS needs `api.wiseoldman.net`. The site reads
+`api.github.com` and GitHub release assets, with a repository fallback on failure.
+Google Analytics is not required for development.
+
+`RS_CLAN_PLAIN_UI=1` is optional. There is no dotenv loader. Use synthetic data
+and temporary output outside the repository; arbitrary OutputDir folders are
+not automatically ignored.
+
+For Codex Cloud, setup is `bash scripts/setup-cloud.sh`; daily validation is
+`bash scripts/check-cloud.sh Dev` (or `Full` before publication). This wrapper puts
+`$HOME/.local/bin` ahead of existing tools so the prepared runtimes are found.
+Setup exports do not persist into the agent phase. No secrets or
+local services are needed; enable targeted network access only for live tests.
+These scripts do not modify the Cloud UI configuration.
+
+### Publication boundaries and troubleshooting
+
+Publishing requires Git, authenticated `gh`, clean `main`, an unused tag,
+matching VERSION/script/changelog and Full validation. It pushes main and the
+tag before creating the release; `-Draft` still pushes. Partial failures are not
+rolled back: inspect local/remote tags and the release before resuming.
+Timestamps make ZIP/manifest bytes vary between builds.
+
+`.dockpanel/deploy.sh` prepares ignored `public/` from `docs/`; the external
+platform handles deployment. Publication and deployment require explicit
+instructions and must never run during setup or normal validation.
+`Build-Release.ps1 -Clean` deletes local `dist/`; validation packages in isolation.
+
+- Missing tools: rerun setup and check the agent PATH.
+- Analyzer import error: run `scripts/Setup-Tools.ps1`; exact version required.
+- Linux loader/ICU failure: provision the standard Ubuntu runtime libraries.
+- Timeout/ambiguous group: check network access and use an OSRS ID with bounded retries.
+- Release fallback: inspect the GitHub response/browser console; fixtures do not prove CORS or rendering.
 
 Run the local safeguards without contacting Jagex or Wise Old Man:
 

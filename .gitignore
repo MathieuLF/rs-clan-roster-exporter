@@ -4,6 +4,8 @@ exports/
 dist/
 *.recovery.json
 .tmp-*
+*.tmp-*
+public/
 
 # Local environment and editor files
 .env
@@ -14,7 +16,6 @@ dist/
 .idea/
 
 # Local AI assistant/tooling files
-AGENTS.md
 CLAUDE.md
 GEMINI.md
 .codex/

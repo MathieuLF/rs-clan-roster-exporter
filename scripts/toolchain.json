@@ -1,0 +1,7 @@
+{
+  "powershell": "7.6.5",
+  "powershellLinuxX64Sha256": "b34ab3b19acac1d3d4d0d3cfdb02acf62f457b0b6a962ff008132033f7566844",
+  "node": "22.22.0",
+  "nodeLinuxX64Sha256": "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37",
+  "scriptAnalyzer": "1.25.0"
+}

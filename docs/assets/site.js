@@ -159,5 +159,11 @@
     }
   };
 
-  hydrate();
+  hydrate().catch(() => {
+    setFallback(
+      "Release not verified",
+      "GitHub Releases returned an unreadable response.",
+      "The script remains available directly from the repository."
+    );
+  });
 })();

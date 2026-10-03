@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$Version = "",
-    [switch]$Clean
+    [switch]$Clean,
+    [string]$OutputDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -115,6 +116,15 @@ if ($scriptText -notmatch "\`$script:ApplicationVersion = `"$([regex]::Escape($R
 }
 
 $distDir = Join-Path -Path $Root -ChildPath "dist"
+if (-not [string]::IsNullOrWhiteSpace($OutputDirectory)) {
+    $distDir = [System.IO.Path]::GetFullPath($OutputDirectory)
+    if ($distDir -eq $Root -or $Root.StartsWith($distDir.TrimEnd([System.IO.Path]::DirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "OutputDirectory must not be the repository or one of its ancestors."
+    }
+}
+if ($Clean -and -not [string]::IsNullOrWhiteSpace($OutputDirectory)) {
+    throw "-Clean is only supported for the repository dist directory."
+}
 if ($Clean -and (Test-Path -LiteralPath $distDir -PathType Container)) {
     Remove-Item -LiteralPath $distDir -Recurse -Force
 }

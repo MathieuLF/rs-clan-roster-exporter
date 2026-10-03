@@ -4,6 +4,11 @@ Every official GitHub release must reuse the matching version section.
 
 ## [Unreleased]
 
+- Added pinned Ubuntu/Cloud setup, contributor instructions, offline Dev/Full profiles and Linux/Windows CI.
+- Added synthetic exporter/site integrations and isolated packaging verification.
+- Added explicit noninteractive exports and fallback for unreadable GitHub responses.
+- Required the pinned analyzer and ignored generated deployment/temporary files.
+
 ## [0.2.0] - 2026-07-09
 
 - Added `-SelfTest` and `scripts/Test-Local.ps1` to validate parsing, exports, special-character paths, and HTTP safeguards locally without network calls.
