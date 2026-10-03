@@ -58,7 +58,8 @@ param(
     [switch]$AllowInsecureFallback,
     [switch]$KeepRecoveryFile,
     [switch]$Version,
-    [switch]$SelfTest
+    [switch]$SelfTest,
+    [switch]$NonInteractive
 )
 
 Set-StrictMode -Version Latest
@@ -262,6 +263,7 @@ function Open-OutputDirectory {
 }
 
 function Test-CanPrompt {
+    if ($NonInteractive) { return $false }
     try {
         return (-not [Console]::IsInputRedirected)
     } catch {

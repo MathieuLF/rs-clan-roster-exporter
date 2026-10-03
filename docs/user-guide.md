@@ -64,6 +64,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Get-RunescapeClanMembe
 
 ## Limits
 
+For unattended exports, add the script parameter `-NonInteractive` and provide
+the game, output format and clan name (or OSRS group ID). Missing parameters and
+ambiguous groups fail instead of opening a prompt. Contributor setup and Dev/Full
+validation profiles are documented in the repository README and require a clone.
+
 - RS3 depends on the public Jagex Clan Members Lite endpoint.
 - OSRS depends on Wise Old Man.
 - `-OpenFolder` tries to open the output folder through the local system association; if that is not possible, the printed path remains usable.

@@ -84,7 +84,7 @@ $tag = "v$ReleaseVersion"
 Assert-CleanMain
 Assert-NoExistingRelease -Tag $tag
 
-& (Join-Path -Path $PSScriptRoot -ChildPath "Test-Local.ps1")
+& (Join-Path -Path $PSScriptRoot -ChildPath "Test-Local.ps1") -Profile Full
 
 & (Join-Path -Path $PSScriptRoot -ChildPath "Build-Release.ps1") -Version $ReleaseVersion -Clean
 Assert-LastExitCode "Could not prepare release assets"
