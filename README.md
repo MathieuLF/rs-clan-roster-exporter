@@ -268,7 +268,7 @@ required parameters. OSRS IDs avoid ambiguous searches. The preview serves
 `-Version`/`-SelfTest` verify it offline and `-NetworkSmoke` verifies a real export.
 RS3 needs `secure.runescape.com`; OSRS needs `api.wiseoldman.net`. The site reads
 `api.github.com` and GitHub release assets, with a repository fallback on failure.
-Google Analytics is not required for development.
+The self-hosted GoatCounter analytics service is not required for development.
 
 `RS_CLAN_PLAIN_UI=1` is optional. There is no dotenv loader. Use synthetic data
 and temporary output outside the repository; arbitrary OutputDir folders are

@@ -23,7 +23,6 @@ test('local HTML references and anchors exist', () => {
     else assert.ok(fs.existsSync(path.join(root, 'docs', ref)), ref);
   }
   assert.match(html, /<html lang="en">/);
-  assert.match(fs.readFileSync(path.join(root, 'docs/legal-notice.md'), 'utf8'), /Google Analytics/);
 });
 test('network failure uses repository fallback', async () => {
   const get = await render(async () => { throw Error('offline'); });
