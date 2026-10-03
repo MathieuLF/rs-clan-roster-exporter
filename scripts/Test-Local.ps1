@@ -1,17 +1,13 @@
 [CmdletBinding()]
 param(
-    [switch]$NetworkSmoke
+    [switch]$NetworkSmoke,
+    [ValidateSet('Dev', 'Full')]
+    [string]$Profile = 'Full'
 )
 
 $ErrorActionPreference = "Stop"
 $Root = [System.IO.Path]::GetFullPath((Join-Path -Path $PSScriptRoot -ChildPath ".."))
 $MainScript = Join-Path -Path $Root -ChildPath "Get-RunescapeClanMembers.ps1"
-$ReleaseScripts = @(
-    Join-Path -Path $Root -ChildPath "scripts\Build-Release.ps1"
-    Join-Path -Path $Root -ChildPath "scripts\Publish-Release.ps1"
-    $PSCommandPath
-)
-
 function Initialize-ValidationConsole {
     try {
         $utf8NoBom = New-Object System.Text.UTF8Encoding -ArgumentList $false
@@ -60,62 +56,6 @@ function Invoke-NativeCheck {
     }
 }
 
-function Invoke-WindowsPowerShellUtf8ScriptCheck {
-    param(
-        [string]$Label,
-        [string]$CommandPath,
-        [string]$ScriptPath,
-        [string[]]$ScriptArguments
-    )
-
-    Write-Host "==> $Label"
-
-    $escapedScriptPath = $ScriptPath.Replace("'", "''")
-    $argumentTokens = @($ScriptArguments | ForEach-Object {
-        if ($_ -match "^-[A-Za-z][A-Za-z0-9]*$") {
-            $_
-        } else {
-            "'$($_.Replace("'", "''"))'"
-        }
-    }) -join " "
-
-    $command = @"
-`$utf8NoBom = New-Object System.Text.UTF8Encoding -ArgumentList `$false
-[Console]::OutputEncoding = `$utf8NoBom
-[Console]::InputEncoding = `$utf8NoBom
-`$global:OutputEncoding = `$utf8NoBom
-`$ProgressPreference = 'SilentlyContinue'
-if (`$env:OS -eq 'Windows_NT' -and -not [Console]::IsOutputRedirected) {
-    cmd.exe /c 'chcp 65001 >nul' | Out-Null
-}
-Set-Location -LiteralPath '$($Root.Replace("'", "''"))'
-`$scriptText = [System.IO.File]::ReadAllText('$escapedScriptPath', [System.Text.Encoding]::UTF8)
-`$scriptBlock = [scriptblock]::Create(`$scriptText)
-& `$scriptBlock $argumentTokens
-exit `$LASTEXITCODE
-"@
-
-    $encodedCommand = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($command))
-    $output = @(& $CommandPath -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand $encodedCommand 2>&1)
-    $exitCode = $LASTEXITCODE
-
-    foreach ($entry in $output) {
-        $text = [string]$entry
-
-        if ($text -like "#< CLIXML*" -or $text -like "<Objs Version=*") {
-            continue
-        }
-
-        if (-not [string]::IsNullOrWhiteSpace($text)) {
-            Write-Host $text
-        }
-    }
-
-    if ($exitCode -ne 0) {
-        throw "$Label failed (exit $exitCode)."
-    }
-}
-
 function Invoke-NetworkSmokeCheck {
     param([string]$CommandPath)
 
@@ -127,6 +67,7 @@ function Invoke-NetworkSmokeCheck {
             "-NoProfile",
             "-File",
             $MainScript,
+            "-NonInteractive",
             "-Game",
             "OSRS",
             "-OsrsGroupId",
@@ -159,16 +100,21 @@ function Invoke-NetworkSmokeCheck {
 }
 
 function Invoke-ScriptAnalyzerCheck {
+    $tools = Get-Content (Join-Path $PSScriptRoot 'toolchain.json') -Raw | ConvertFrom-Json
+    Import-Module PSScriptAnalyzer -RequiredVersion $tools.scriptAnalyzer -Force -ErrorAction Stop
     $analyzer = Get-Command -Name Invoke-ScriptAnalyzer -ErrorAction SilentlyContinue
 
     if ($null -eq $analyzer) {
-        Write-Warning "PSScriptAnalyzer not found; static analysis skipped."
-        return
+        throw "PSScriptAnalyzer is required. Run scripts/Setup-Tools.ps1."
     }
 
     Write-Host "==> PSScriptAnalyzer errors"
-    $issues = foreach ($path in (@($MainScript) + $ReleaseScripts)) {
-        Invoke-ScriptAnalyzer -Path $path -Severity Error
+    $issues = foreach ($path in (@($MainScript) + @(Get-ChildItem $PSScriptRoot -Filter '*.ps1' -File | ForEach-Object FullName) + @(Get-ChildItem (Join-Path $Root 'tests') -Filter '*.ps1' -File | ForEach-Object FullName))) {
+        $tokens = $null
+        $parseErrors = $null
+        [void][System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$parseErrors)
+        if ($parseErrors.Count -gt 0) { throw "PowerShell parse errors in $path : $parseErrors" }
+        Invoke-ScriptAnalyzer -Path $path -Settings (Join-Path $PSScriptRoot 'PSScriptAnalyzerSettings.psd1')
     }
 
     $issues = @($issues)
@@ -189,7 +135,7 @@ if (-not (Test-Path -LiteralPath $MainScript -PathType Leaf)) {
 $pwsh = Get-CommandSource -Name "pwsh"
 
 if ([string]::IsNullOrWhiteSpace($pwsh)) {
-    Write-Warning "pwsh not found; PowerShell 7 validation skipped."
+    throw "PowerShell 7 is required. Run scripts/setup-cloud.sh on Ubuntu."
 } else {
     Invoke-NativeCheck -Label "PowerShell 7 - Version" -CommandPath $pwsh -Arguments @("-NoProfile", "-File", $MainScript, "-Version")
     Invoke-NativeCheck -Label "PowerShell 7 - SelfTest" -CommandPath $pwsh -Arguments @("-NoProfile", "-File", $MainScript, "-SelfTest")
@@ -201,12 +147,22 @@ if ($env:OS -eq "Windows_NT") {
     if ([string]::IsNullOrWhiteSpace($windowsPowerShell)) {
         Write-Warning "powershell.exe not found; Windows PowerShell 5.1 validation skipped."
     } else {
-        Invoke-WindowsPowerShellUtf8ScriptCheck -Label "Windows PowerShell - Version" -CommandPath $windowsPowerShell -ScriptPath $MainScript -ScriptArguments @("-Version")
-        Invoke-WindowsPowerShellUtf8ScriptCheck -Label "Windows PowerShell - SelfTest" -CommandPath $windowsPowerShell -ScriptPath $MainScript -ScriptArguments @("-SelfTest")
+        Invoke-NativeCheck -Label "Windows PowerShell - Version (real file)" -CommandPath $windowsPowerShell -Arguments @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', $MainScript, '-Version')
+        Invoke-NativeCheck -Label "Windows PowerShell - SelfTest (real file)" -CommandPath $windowsPowerShell -Arguments @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', $MainScript, '-SelfTest')
     }
 }
 
 Invoke-ScriptAnalyzerCheck
+Invoke-NativeCheck -Label 'Offline exporter integration' -CommandPath $pwsh -Arguments @('-NoProfile', '-NonInteractive', '-File', (Join-Path $Root 'tests/Test-Exporter.ps1'))
+$node = Get-CommandSource -Name 'node'
+if ([string]::IsNullOrWhiteSpace($node)) { throw 'Node.js is required for site checks; run the setup.' }
+Invoke-NativeCheck -Label 'Site JavaScript syntax' -CommandPath $node -Arguments @('--check', (Join-Path $Root 'docs/assets/site.js'))
+Invoke-NativeCheck -Label 'Site contracts and release states' -CommandPath $node -Arguments @('--test', (Join-Path $Root 'tests/site.test.cjs'))
+if ($Profile -eq 'Full') {
+    Invoke-NativeCheck -Label 'Release packaging' -CommandPath $pwsh -Arguments @('-NoProfile', '-NonInteractive', '-File', (Join-Path $Root 'tests/Test-Release.ps1'))
+} else {
+    Write-Host 'Dev excludes release packaging, live APIs and browser rendering. Use Full and targeted integrations before publication.'
+}
 
 if ($NetworkSmoke) {
     if ([string]::IsNullOrWhiteSpace($pwsh)) {
