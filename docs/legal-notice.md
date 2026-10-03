@@ -8,7 +8,7 @@ The pictograms used on the microsite are original creations intended to identify
 
 The script is provided as is, without warranty. Users remain responsible for reviewing generated files before publishing, sharing, or archiving them.
 
-The microsite uses Google Analytics 4 with measurement ID `G-WFKNWEMRC9` to understand aggregate site usage. Google may process usage data according to its own privacy and data processing terms.
+The microsite uses Nethercore's self-hosted GoatCounter instance to understand aggregate page usage. It sends only the fixed microsite path, without URL parameters, advertising profiles, or a third-party analytics account.
 
 To the maximum extent permitted by law, Mathieu Lapointe-Fiset and contributors disclaim all liability related to the use of this software or inability to use it.
 
