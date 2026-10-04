@@ -274,12 +274,12 @@ The self-hosted GoatCounter analytics service is not required for development.
 and temporary output outside the repository; arbitrary OutputDir folders are
 not automatically ignored.
 
-For environnement de développement distant, setup is `bash scripts/setup-cloud.sh`; daily validation is
+For a prepared Linux environment, setup is `bash scripts/setup-cloud.sh`; daily validation is
 `bash scripts/check-cloud.sh Dev` (or `Full` before publication). This wrapper puts
 `$HOME/.local/bin` ahead of existing tools so the prepared runtimes are found.
-Setup exports do not persist into the agent phase. No secrets or
+Setup exports do not persist into a separate shell session. No secrets or
 local services are needed; enable targeted network access only for live tests.
-These scripts do not modify the Cloud UI configuration.
+
 
 ### Publication boundaries and troubleshooting
 
